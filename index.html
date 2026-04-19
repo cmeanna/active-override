@@ -289,9 +289,12 @@ const MAP_DATA = [
 // Company building positions on the tilemap (tile coords)
 // These are areas on the map that trigger battles
 const COMPANY_ZONES = [
-  { key: 'palantir', tileX: 0,  tileY: 3,  w: 18, h: 6,  name: 'PALANTIR',   color: 0x4444ff, label: 'PALANTIR' },
-  { key: 'meta',     tileX: 0,  tileY: 13, w: 18, h: 6,  name: 'META',        color: 0x1877f2, label: 'META' },
-  { key: 'exxon',    tileX: 21, tileY: 13, w: 20, h: 6,  name: 'EXXON MOBIL', color: 0xff4400, label: 'EXXON' },
+  // PALANTIR: grande edificio grigio top-left (col 0-17, row 3-5)
+  { key: 'palantir', tileX: 0,  tileY: 3, w: 18, h: 3, name: 'PALANTIR',   color: 0x4444ff },
+  // META: edificio con awning rosa centro-sinistra (col 3-11, row 7-11)
+  { key: 'meta',     tileX: 3,  tileY: 7, w: 9,  h: 5, name: 'META',        color: 0x1877f2 },
+  // EXXON: edificio in alto a destra con tetto (col 47-54, row 0-5)
+  { key: 'exxon',    tileX: 47, tileY: 0, w: 8,  h: 6, name: 'EXXON MOBIL', color: 0xff4400 },
 ];
 
 // Collision map: 0=walkable, 1=blocked
@@ -587,7 +590,7 @@ class MapScene extends Phaser.Scene {
     // Player setup
     const char = CHARS[state.selectedChar];
     const startX = 5 * SCALED_TILE;
-    const startY = 16 * SCALED_TILE;
+    const startY = 6 * SCALED_TILE;
 
     try {
       this.player = this.add.sprite(startX, startY, 'player-map').setDepth(10);
