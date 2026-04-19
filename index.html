@@ -6,526 +6,98 @@
 <title>Active Override</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap');
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: #0a0a0f;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    font-family: 'Press Start 2P', monospace;
-    overflow: hidden;
-  }
-
-  #game-container {
-    width: 800px;
-    height: 500px;
-    position: relative;
-    overflow: hidden;
-    border: 2px solid #00ff88;
-    box-shadow: 0 0 30px #00ff8844, 0 0 60px #00ff8822;
-  }
-
-  /* ── SCREENS ── */
-  .screen {
-    position: absolute;
-    inset: 0;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
+  body { background: #0a0a0f; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Press Start 2P', monospace; overflow: hidden; }
+  #game-container { width: 800px; height: 500px; position: relative; overflow: hidden; border: 2px solid #00ff88; box-shadow: 0 0 30px #00ff8844, 0 0 60px #00ff8822; }
+  .screen { position: absolute; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; }
   .screen.active { display: flex; }
 
-  /* ── INTRO SCREEN ── */
-  #intro-screen {
-    background: #0a0a0f;
-    overflow: hidden;
-  }
-  #star-canvas {
-    position: absolute;
-    inset: 0;
-  }
-  .intro-content {
-    position: relative;
-    z-index: 10;
-    text-align: center;
-  }
-  .game-title {
-    font-size: 32px;
-    color: #00ff88;
-    text-shadow: 0 0 20px #00ff88, 0 0 40px #00ff8888;
-    margin-bottom: 8px;
-    animation: titlePulse 2s ease-in-out infinite;
-  }
-  .game-subtitle {
-    font-size: 9px;
-    color: #888;
-    margin-bottom: 40px;
-    letter-spacing: 3px;
-  }
-  .robeco-badge {
-    font-size: 7px;
-    color: #00ff88;
-    border: 1px solid #00ff8866;
-    padding: 4px 12px;
-    margin-bottom: 50px;
-    letter-spacing: 2px;
-  }
-  @keyframes titlePulse {
-    0%, 100% { text-shadow: 0 0 20px #00ff88, 0 0 40px #00ff8888; }
-    50% { text-shadow: 0 0 30px #00ff88, 0 0 60px #00ff88cc, 0 0 80px #00ff8844; }
-  }
-  .btn-primary {
-    background: transparent;
-    border: 2px solid #00ff88;
-    color: #00ff88;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 12px;
-    padding: 14px 32px;
-    cursor: pointer;
-    transition: all 0.1s;
-    text-transform: uppercase;
-  }
-  .btn-primary:hover {
-    background: #00ff88;
-    color: #0a0a0f;
-    box-shadow: 0 0 20px #00ff88;
-  }
-  .btn-primary:active { transform: scale(0.97); }
+  /* INTRO */
+  #intro-screen { background: #0a0a0f; overflow: hidden; }
+  #star-canvas { position: absolute; inset: 0; }
+  .intro-content { position: relative; z-index: 10; text-align: center; }
+  .game-title { font-size: 32px; color: #00ff88; text-shadow: 0 0 20px #00ff88, 0 0 40px #00ff8888; margin-bottom: 8px; animation: titlePulse 2s ease-in-out infinite; }
+  .game-subtitle { font-size: 9px; color: #888; margin-bottom: 40px; letter-spacing: 3px; }
+  .robeco-badge { font-size: 7px; color: #00ff88; border: 1px solid #00ff8866; padding: 4px 12px; margin-bottom: 50px; letter-spacing: 2px; }
+  @keyframes titlePulse { 0%,100%{text-shadow:0 0 20px #00ff88,0 0 40px #00ff8888}50%{text-shadow:0 0 30px #00ff88,0 0 60px #00ff88cc} }
+  .btn-primary { background: transparent; border: 2px solid #00ff88; color: #00ff88; font-family: 'Press Start 2P', monospace; font-size: 12px; padding: 14px 32px; cursor: pointer; transition: all 0.1s; }
+  .btn-primary:hover { background: #00ff88; color: #0a0a0f; box-shadow: 0 0 20px #00ff88; }
 
-  /* ── CHARACTER SELECT ── */
-  #char-screen {
-    background: #0a0a0f;
-  }
-  #char-screen .bg-layer {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, #0a0a0f 0%, #0d1a12 100%);
-  }
-  .screen-title {
-    font-size: 11px;
-    color: #00ff88;
-    margin-bottom: 6px;
-    position: relative;
-    z-index: 2;
-  }
-  .screen-sub {
-    font-size: 7px;
-    color: #555;
-    margin-bottom: 32px;
-    position: relative;
-    z-index: 2;
-    letter-spacing: 2px;
-  }
-  .char-cards {
-    display: flex;
-    gap: 20px;
-    position: relative;
-    z-index: 2;
-  }
-  .char-card {
-    width: 190px;
-    border: 1px solid #333;
-    padding: 20px 16px;
-    cursor: pointer;
-    transition: all 0.15s;
-    background: #111;
-    position: relative;
-    overflow: hidden;
-  }
-  .char-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(135deg, transparent 60%, rgba(0,255,136,0.05));
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-  .char-card:hover {
-    border-color: #00ff88;
-    box-shadow: 0 0 16px #00ff8833;
-    transform: translateY(-3px);
-  }
-  .char-card:hover::before { opacity: 1; }
-  .char-icon {
-    font-size: 40px;
-    margin-bottom: 12px;
-    display: block;
-    text-align: center;
-  }
-  .char-name {
-    font-size: 9px;
-    color: #fff;
-    margin-bottom: 6px;
-    text-align: center;
-  }
-  .char-role {
-    font-size: 6px;
-    color: #00ff88;
-    text-align: center;
-    margin-bottom: 14px;
-    letter-spacing: 1px;
-  }
-  .char-stat {
-    font-size: 6px;
-    color: #666;
-    margin-bottom: 4px;
-  }
-  .char-stat span {
-    color: #00ff88;
-    float: right;
-  }
-  .char-moves-label {
-    font-size: 5px;
-    color: #444;
-    margin-top: 12px;
-    margin-bottom: 6px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .char-move-pill {
-    display: inline-block;
-    font-size: 5px;
-    color: #888;
-    border: 1px solid #222;
-    padding: 2px 5px;
-    margin: 2px 1px;
-    font-family: 'Share Tech Mono', monospace;
-  }
+  /* CHAR SELECT */
+  #char-screen { background: #0a0a0f; }
+  .screen-title { font-size: 11px; color: #00ff88; margin-bottom: 6px; }
+  .screen-sub { font-size: 7px; color: #555; margin-bottom: 32px; letter-spacing: 2px; }
+  .char-cards { display: flex; gap: 20px; }
+  .char-card { width: 190px; border: 1px solid #333; padding: 20px 16px; cursor: pointer; transition: all 0.15s; background: #111; }
+  .char-card:hover { border-color: #00ff88; box-shadow: 0 0 16px #00ff8833; transform: translateY(-3px); }
+  .char-name { font-size: 9px; color: #fff; margin-bottom: 6px; text-align: center; }
+  .char-role { font-size: 6px; color: #00ff88; text-align: center; margin-bottom: 14px; }
+  .char-stat { font-size: 6px; color: #666; margin-bottom: 4px; }
+  .char-stat span { color: #00ff88; float: right; }
+  .char-moves-label { font-size: 5px; color: #444; margin-top: 12px; margin-bottom: 6px; }
+  .char-move-pill { display: inline-block; font-size: 5px; color: #888; border: 1px solid #222; padding: 2px 5px; margin: 2px 1px; font-family: 'Share Tech Mono', monospace; }
 
-  /* ── MAP SCREEN ── */
-  #map-screen { background: #0a0a0f; }
-  .map-bg {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-    background: linear-gradient(180deg, #0a0d1a 0%, #0d1a0d 100%);
-  }
-  .map-bg-img {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    image-rendering: pixelated;
-  }
-  .map-bg-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-  }
-  .map-header {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 16px 24px;
-    width: 100%;
-    border-bottom: 1px solid #1a1a1a;
-  }
-  .map-player-name {
-    font-size: 8px;
-    color: #00ff88;
-  }
-  .map-player-role {
-    font-size: 6px;
-    color: #555;
-  }
-  .map-title-center {
-    flex: 1;
-    text-align: center;
-    font-size: 8px;
-    color: #333;
-    letter-spacing: 3px;
-  }
-  .map-resolutions {
-    font-size: 6px;
-    color: #555;
-  }
-  .map-resolutions span { color: #00ff88; }
-  .city-grid {
-    position: relative;
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    margin-top: 24px;
-  }
-  .city-row {
-    display: flex;
-    gap: 20px;
-  }
-  .city-building {
-    width: 210px;
-    border: 1px solid #1e1e1e;
-    padding: 16px;
-    cursor: pointer;
-    transition: all 0.15s;
-    background: #0d0d0d;
-    position: relative;
-  }
-  .city-building.defeated {
-    opacity: 0.4;
-    cursor: not-allowed;
-    border-color: #1a1a1a;
-  }
-  .city-building:not(.defeated):hover {
-    border-color: #ff4444;
-    box-shadow: 0 0 16px #ff444433;
-    transform: translateY(-2px);
-  }
-  .building-logo {
-    font-size: 9px;
-    color: #ff4444;
-    margin-bottom: 8px;
-    letter-spacing: 1px;
-  }
-  .building-name {
-    font-size: 7px;
-    color: #666;
-    margin-bottom: 6px;
-  }
-  .building-weakness {
-    font-size: 5px;
-    color: #333;
-    letter-spacing: 1px;
-  }
-  .building-weakness span { color: #ff8844; }
-  .defeated-badge {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    font-size: 5px;
-    color: #00ff88;
-    border: 1px solid #00ff88;
-    padding: 2px 5px;
-  }
-  .city-building.defeated .building-logo { color: #333; }
+  /* MAP */
+  #map-screen { background: #0a0a0f; padding: 0; }
+  #phaser-container { position: absolute; inset: 0; }
+  #map-ui { position: absolute; top: 0; left: 0; right: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: linear-gradient(180deg,rgba(0,0,0,0.85) 0%,transparent 100%); pointer-events: none; }
+  .map-player-name-ui { font-size: 8px; color: #00ff88; }
+  .map-player-role-ui { font-size: 6px; color: #555; margin-top: 2px; }
+  .map-title-ui { font-size: 8px; color: #333; letter-spacing: 3px; }
+  .map-res-ui { font-size: 6px; color: #555; }
+  .map-res-ui span { color: #00ff88; }
+  #enter-prompt { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 8px; color: #ffaa00; z-index: 20; animation: blink 1s ease-in-out infinite; pointer-events: none; display: none; text-align: center; white-space: nowrap; }
+  #wasd-hint { position: absolute; bottom: 8px; right: 12px; font-size: 6px; color: #333; z-index: 20; pointer-events: none; }
+  @keyframes blink { 0%,100%{opacity:1}50%{opacity:0} }
 
-  /* ── BATTLE SCREEN ── */
+  /* BATTLE */
   #battle-screen { background: #0a0a0f; padding: 0; }
-
-  .battle-bg {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-  }
-  .bg-img {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    image-rendering: pixelated;
-  }
-  .bg-back { bottom: 0; opacity: 0.5; }
-  .bg-middle { bottom: 0; opacity: 0.6; }
-  .bg-fore { bottom: 0; opacity: 0.8; }
-
-  .battle-ui {
-    position: relative;
-    z-index: 10;
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-
-  /* HP bars */
-  .battle-top {
-    display: flex;
-    justify-content: space-between;
-    padding: 12px 16px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, transparent 100%);
-  }
-  .fighter-hud {
-    width: 220px;
-  }
-  .hud-name {
-    font-size: 7px;
-    color: #fff;
-    margin-bottom: 4px;
-  }
-  .hud-org {
-    font-size: 5px;
-    color: #555;
-    margin-bottom: 6px;
-    letter-spacing: 1px;
-  }
-  .hp-bar-wrap {
-    background: #111;
-    height: 8px;
-    border: 1px solid #333;
-    position: relative;
-  }
-  .hp-bar {
-    height: 100%;
-    transition: width 0.4s ease;
-  }
+  .battle-bg { position: absolute; inset: 0; overflow: hidden; }
+  .bg-img { position: absolute; bottom: 0; width: 100%; image-rendering: pixelated; object-fit: cover; }
+  .bg-back{opacity:.5}.bg-middle{opacity:.6}.bg-fore{opacity:.8}
+  .battle-ui { position: relative; z-index: 10; display: flex; flex-direction: column; height: 100%; }
+  .battle-top { display: flex; justify-content: space-between; padding: 12px 16px; background: linear-gradient(180deg,rgba(0,0,0,0.9) 0%,transparent 100%); }
+  .fighter-hud { width: 220px; }
+  .hud-name { font-size: 8px; color: #fff; margin-bottom: 4px; }
+  .hud-org { font-size: 5px; color: #555; margin-bottom: 6px; }
+  .hp-bar-wrap { background: #111; height: 8px; border: 1px solid #333; }
+  .hp-bar { height: 100%; transition: width 0.4s ease; }
   .hp-bar.player { background: #00ff88; }
   .hp-bar.enemy { background: #ff4444; }
-  .hp-text {
-    font-size: 5px;
-    color: #666;
-    margin-top: 3px;
-    font-family: 'Share Tech Mono', monospace;
-  }
+  .hp-text { font-size: 5px; color: #666; margin-top: 3px; font-family: 'Share Tech Mono', monospace; }
+  .battle-arena { flex: 1; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 60px 20px; position: relative; }
+  .sprite-wrap { display: flex; flex-direction: column; align-items: center; }
+  .sprite-canvas { image-rendering: pixelated; width: 128px; height: 128px; }
+  .sprite-label { font-size: 5px; color: #444; margin-top: 4px; }
+  .damage-flash { font-size: 14px; color: #ff4444; text-shadow: 0 0 10px #ff4444; opacity: 0; transition: opacity 0.1s; position: absolute; left: 50%; top: 35%; transform: translateX(-50%); }
+  .damage-flash.show{opacity:1}
+  .super-flash { font-size: 7px; color: #ffaa00; opacity: 0; transition: opacity 0.1s; position: absolute; left: 50%; top: 55%; transform: translateX(-50%); white-space: nowrap; }
+  .super-flash.show{opacity:1}
+  .battle-bottom { background: linear-gradient(0deg,rgba(0,0,0,0.95) 0%,rgba(0,0,0,0.85) 100%); border-top: 1px solid #1a1a1a; padding: 10px 14px; }
+  .battle-log { font-size: 6px; color: #888; font-family: 'Share Tech Mono', monospace; margin-bottom: 8px; min-height: 18px; line-height: 1.6; }
+  .battle-log .hl{color:#00ff88}.battle-log .dmg{color:#ff4444}.battle-log .weak{color:#ffaa00}
+  .move-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .move-btn { background: #0d0d0d; border: 1px solid #222; color: #ccc; font-family: 'Press Start 2P', monospace; font-size: 6px; padding: 8px 10px; cursor: pointer; transition: all 0.1s; text-align: left; line-height: 1.5; }
+  .move-btn:hover:not(:disabled){border-color:#00ff88;color:#00ff88;background:#001a0e}
+  .move-btn:disabled{opacity:.3;cursor:not-allowed}
+  .move-power{float:right;color:#444;font-size:5px}.move-power.super{color:#ffaa00}
 
-  /* Sprite area */
-  .battle-arena {
-    flex: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    padding: 0 60px 20px;
-    position: relative;
-  }
-  .sprite-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .sprite-canvas {
-    image-rendering: pixelated;
-    width: 96px;
-    height: 96px;
-  }
-  .sprite-enemy {
-    transform: scaleX(-1);
-  }
-  .sprite-label {
-    font-size: 5px;
-    color: #444;
-    margin-top: 4px;
-    text-align: center;
-  }
-  .battle-log-mid {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    pointer-events: none;
-  }
-  .damage-flash {
-    font-size: 14px;
-    color: #ff4444;
-    text-shadow: 0 0 10px #ff4444;
-    opacity: 0;
-    transition: opacity 0.1s;
-  }
-  .damage-flash.show { opacity: 1; }
-  .heal-flash {
-    font-size: 10px;
-    color: #00ff88;
-    text-shadow: 0 0 10px #00ff88;
-    opacity: 0;
-    transition: opacity 0.1s;
-  }
-  .heal-flash.show { opacity: 1; }
-
-  /* Battle bottom */
-  .battle-bottom {
-    background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.85) 100%);
-    border-top: 1px solid #1a1a1a;
-    padding: 10px 14px;
-  }
-  .battle-log {
-    font-size: 6px;
-    color: #888;
-    font-family: 'Share Tech Mono', monospace;
-    margin-bottom: 8px;
-    min-height: 18px;
-    line-height: 1.6;
-  }
-  .battle-log .highlight { color: #00ff88; }
-  .battle-log .damage { color: #ff4444; }
-  .battle-log .weak { color: #ffaa00; }
-  .move-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-  }
-  .move-btn {
-    background: #0d0d0d;
-    border: 1px solid #222;
-    color: #ccc;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 6px;
-    padding: 8px 10px;
-    cursor: pointer;
-    transition: all 0.1s;
-    text-align: left;
-    line-height: 1.5;
-  }
-  .move-btn:hover:not(:disabled) {
-    border-color: #00ff88;
-    color: #00ff88;
-    background: #001a0e;
-  }
-  .move-btn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-  .move-power {
-    float: right;
-    color: #444;
-    font-size: 5px;
-  }
-  .move-power.super { color: #ffaa00; }
-
-  /* ── VICTORY / DEFEAT ── */
-  #victory-screen, #defeat-screen, #gameover-screen {
-    background: #0a0a0f;
-  }
-  .result-icon { font-size: 60px; margin-bottom: 20px; }
-  .result-title {
-    font-size: 16px;
-    margin-bottom: 12px;
-  }
-  .result-title.win { color: #00ff88; text-shadow: 0 0 20px #00ff88; }
-  .result-title.lose { color: #ff4444; text-shadow: 0 0 20px #ff4444; }
-  .result-sub {
-    font-size: 7px;
-    color: #555;
-    margin-bottom: 8px;
-    text-align: center;
-    max-width: 400px;
-    line-height: 2;
-  }
-  .resolution-earned {
-    font-size: 7px;
-    color: #ffaa00;
-    border: 1px solid #ffaa0044;
-    padding: 8px 16px;
-    margin: 16px 0 24px;
-    text-align: center;
-  }
-
-  /* ── FINAL SCREEN ── */
-  #gameover-screen .result-title { color: #00ff88; }
-  .credits {
-    font-size: 5px;
-    color: #333;
-    text-align: center;
-    line-height: 2.5;
-    margin-top: 16px;
-  }
-  .credits a { color: #444; text-decoration: none; }
-
-  /* shared util */
-  .mt8 { margin-top: 8px; }
-  .mt16 { margin-top: 16px; }
+  /* RESULTS */
+  #victory-screen,#defeat-screen,#gameover-screen{background:#0a0a0f}
+  .result-icon{font-size:60px;margin-bottom:20px}
+  .result-title{font-size:16px;margin-bottom:12px}
+  .result-title.win{color:#00ff88;text-shadow:0 0 20px #00ff88}
+  .result-title.lose{color:#ff4444;text-shadow:0 0 20px #ff4444}
+  .result-sub{font-size:7px;color:#555;margin-bottom:8px;text-align:center;max-width:400px;line-height:2}
+  .resolution-earned{font-size:7px;color:#ffaa00;border:1px solid #ffaa0044;padding:8px 16px;margin:16px 0 24px;text-align:center}
+  .mt8{margin-top:8px}.mt16{margin-top:16px}
+  .credits{font-size:5px;color:#333;text-align:center;line-height:2.5;margin-top:16px}
 </style>
 </head>
 <body>
-
 <div id="game-container">
 
-  <!-- ══ INTRO ══ -->
+  <!-- INTRO -->
   <div id="intro-screen" class="screen active">
     <canvas id="star-canvas"></canvas>
     <div class="intro-content">
@@ -533,17 +105,15 @@
       <div class="game-subtitle">A ROBECO SI CENTER STORY</div>
       <div class="robeco-badge">SUSTAINABLE INVESTING · ACTIVE OWNERSHIP TEAM</div>
       <button class="btn-primary" onclick="showScreen('char-screen')">START GAME</button>
-      <div style="font-size:6px;color:#333;margin-top:20px;letter-spacing:2px;">USE MOUSE TO PLAY</div>
+      <div style="font-size:6px;color:#333;margin-top:20px;letter-spacing:2px;">WASD / ARROWS TO MOVE · ENTER TO ENGAGE</div>
     </div>
   </div>
 
-  <!-- ══ CHARACTER SELECT ══ -->
+  <!-- CHAR SELECT -->
   <div id="char-screen" class="screen">
-    <div class="bg-layer"></div>
     <div class="screen-title">SELECT YOUR SPECIALIST</div>
     <div class="screen-sub">ACTIVE OWNERSHIP TEAM · ROTTERDAM HQ</div>
     <div class="char-cards">
-
       <div class="char-card" onclick="selectChar('danielle')">
         <canvas id="preview-danielle" width="96" height="96" style="display:block;margin:0 auto 8px;image-rendering:pixelated"></canvas>
         <div class="char-name">DANIELLE</div>
@@ -552,12 +122,9 @@
         <div class="char-stat">DEF <span>★★★☆☆</span></div>
         <div class="char-stat">SPD <span>★★★★★</span></div>
         <div class="char-moves-label">MOVES</div>
-        <span class="char-move-pill">HR Report</span>
-        <span class="char-move-pill">Supply Chain</span>
-        <span class="char-move-pill">Media Escalation</span>
-        <span class="char-move-pill">Coalition Vote</span>
+        <span class="char-move-pill">HR Report</span><span class="char-move-pill">Supply Chain</span>
+        <span class="char-move-pill">Media Escalation</span><span class="char-move-pill">Coalition Vote</span>
       </div>
-
       <div class="char-card" onclick="selectChar('peter')">
         <canvas id="preview-peter" width="96" height="96" style="display:block;margin:0 auto 8px;image-rendering:pixelated"></canvas>
         <div class="char-name">PETER</div>
@@ -566,12 +133,9 @@
         <div class="char-stat">DEF <span>★★★★☆</span></div>
         <div class="char-stat">SPD <span>★★☆☆☆</span></div>
         <div class="char-moves-label">MOVES</div>
-        <span class="char-move-pill">Ocean Brief</span>
-        <span class="char-move-pill">Divestment</span>
-        <span class="char-move-pill">Board Resolution</span>
-        <span class="char-move-pill">Public Statement</span>
+        <span class="char-move-pill">Ocean Brief</span><span class="char-move-pill">Divestment</span>
+        <span class="char-move-pill">Board Resolution</span><span class="char-move-pill">Public Statement</span>
       </div>
-
       <div class="char-card" onclick="selectChar('michiel')">
         <canvas id="preview-michiel" width="96" height="96" style="display:block;margin:0 auto 8px;image-rendering:pixelated"></canvas>
         <div class="char-name">MICHIEL</div>
@@ -580,63 +144,34 @@
         <div class="char-stat">DEF <span>★★★★★</span></div>
         <div class="char-stat">SPD <span>★★★☆☆</span></div>
         <div class="char-moves-label">MOVES</div>
-        <span class="char-move-pill">Coalition Vote</span>
-        <span class="char-move-pill">AGM Season</span>
-        <span class="char-move-pill">Gov Knowledge</span>
-        <span class="char-move-pill">Shareholder Res.</span>
+        <span class="char-move-pill">Coalition Vote</span><span class="char-move-pill">AGM Season</span>
+        <span class="char-move-pill">Gov Knowledge</span><span class="char-move-pill">Shareholder Res.</span>
       </div>
-
     </div>
   </div>
 
-  <!-- ══ MAP ══ -->
+  <!-- MAP -->
   <div id="map-screen" class="screen">
-    <div class="map-bg">
-      <img class="map-bg-img" src="assets/back.png" alt="" style="opacity:0.4">
-      <img class="map-bg-img" src="assets/middle.png" alt="" style="opacity:0.5">
-      <img class="map-bg-img" src="assets/foreground.png" alt="" style="opacity:0.6">
-      <div class="map-bg-overlay"></div>
-    </div>
-    <div class="map-header">
+    <div id="phaser-container"></div>
+    <div id="map-ui">
       <div>
-        <div class="map-player-name" id="map-player-name">—</div>
-        <div class="map-player-role" id="map-player-role">—</div>
+        <div class="map-player-name-ui" id="map-player-name">—</div>
+        <div class="map-player-role-ui" id="map-player-role">—</div>
       </div>
-      <div class="map-title-center">[ CITY MAP ]</div>
-      <div class="map-resolutions">RESOLUTIONS: <span id="resolution-count">0</span>/3</div>
+      <div class="map-title-ui">[ CITY MAP ]</div>
+      <div class="map-res-ui">RESOLUTIONS: <span id="resolution-count">0</span>/3</div>
     </div>
-    <div class="city-grid">
-      <div class="city-row">
-        <div class="city-building" id="building-palantir" onclick="startBattle('palantir')">
-          <div class="building-logo">PALANTIR</div>
-          <div class="building-name">Technologies Inc.</div>
-          <div class="building-weakness">WEAKNESS: <span>GOVERNANCE</span></div>
-          <div class="defeated-badge" style="display:none">✓ RESOLVED</div>
-        </div>
-        <div class="city-building" id="building-meta" onclick="startBattle('meta')">
-          <div class="building-logo">META</div>
-          <div class="building-name">Platforms Inc.</div>
-          <div class="building-weakness">WEAKNESS: <span>HUMAN RIGHTS</span></div>
-          <div class="defeated-badge" style="display:none">✓ RESOLVED</div>
-        </div>
-        <div class="city-building" id="building-exxon" onclick="startBattle('exxon')">
-          <div class="building-logo">EXXON</div>
-          <div class="building-name">Mobil Corporation</div>
-          <div class="building-weakness">WEAKNESS: <span>OCEAN / CLIMATE</span></div>
-          <div class="defeated-badge" style="display:none">✓ RESOLVED</div>
-        </div>
-      </div>
-    </div>
+    <div id="enter-prompt">▶ PRESS ENTER TO ENGAGE</div>
+    <div id="wasd-hint">WASD / ← → TO MOVE</div>
   </div>
 
-  <!-- ══ BATTLE ══ -->
+  <!-- BATTLE -->
   <div id="battle-screen" class="screen">
     <div class="battle-bg">
-      <img class="bg-img bg-back"   id="bg-back"   src="assets/back.png"       alt="">
-      <img class="bg-img bg-middle" id="bg-middle"  src="assets/middle.png"     alt="">
-      <img class="bg-img bg-fore"   id="bg-fore"    src="assets/foreground.png" alt="">
+      <img class="bg-img bg-back"   src="assets/back.png" alt="">
+      <img class="bg-img bg-middle" src="assets/middle.png" alt="">
+      <img class="bg-img bg-fore"   src="assets/foreground.png" alt="">
     </div>
-
     <div class="battle-ui">
       <div class="battle-top">
         <div class="fighter-hud">
@@ -653,25 +188,23 @@
           <div class="hp-text" id="enemy-hp-text">HP: 120 / 120</div>
         </div>
       </div>
-
       <div class="battle-arena">
         <div class="sprite-wrap">
           <canvas class="sprite-canvas" id="player-sprite"></canvas>
           <div class="sprite-label" id="player-sprite-label">—</div>
         </div>
-        <div class="battle-log-mid">
+        <div style="position:relative;flex:1;height:100%">
           <div class="damage-flash" id="damage-flash">-20</div>
-          <div class="heal-flash" id="heal-flash">SUPER EFFECTIVE!</div>
+          <div class="super-flash" id="super-flash">SUPER EFFECTIVE!</div>
         </div>
         <div class="sprite-wrap">
-          <canvas class="sprite-canvas sprite-enemy" id="enemy-sprite"></canvas>
+          <canvas class="sprite-canvas" id="enemy-sprite"></canvas>
           <div class="sprite-label" id="enemy-sprite-label">—</div>
         </div>
       </div>
-
       <div class="battle-bottom">
         <div class="battle-log" id="battle-log">Choose your action.</div>
-        <div class="move-grid" id="move-grid">
+        <div class="move-grid">
           <button class="move-btn" id="move-0" onclick="useMove(0)">—</button>
           <button class="move-btn" id="move-1" onclick="useMove(1)">—</button>
           <button class="move-btn" id="move-2" onclick="useMove(2)">—</button>
@@ -681,570 +214,497 @@
     </div>
   </div>
 
-  <!-- ══ VICTORY (single battle) ══ -->
+  <!-- VICTORY -->
   <div id="victory-screen" class="screen">
     <div class="result-icon">🏆</div>
     <div class="result-title win">ENGAGEMENT SUCCESS</div>
     <div class="result-sub" id="victory-sub">—</div>
     <div class="resolution-earned" id="resolution-earned">📋 PROXY VOTING RESOLUTION OBTAINED</div>
-    <button class="btn-primary" onclick="returnToMap()">BACK TO CITY MAP</button>
+    <button class="btn-primary" onclick="returnToMap()">BACK TO CITY</button>
   </div>
 
-  <!-- ══ DEFEAT ══ -->
+  <!-- DEFEAT -->
   <div id="defeat-screen" class="screen">
     <div class="result-icon">💼</div>
     <div class="result-title lose">ENGAGEMENT FAILED</div>
-    <div class="result-sub" id="defeat-sub">The company's lawyers were too good this time.<br>Regroup and try again.</div>
+    <div class="result-sub" id="defeat-sub">Regroup and try again.</div>
     <button class="btn-primary mt16" onclick="retryBattle()">TRY AGAIN</button>
-    <button class="btn-primary mt8" style="border-color:#333;color:#333;" onclick="returnToMap()">RETREAT TO MAP</button>
+    <button class="btn-primary mt8" style="border-color:#333;color:#333;" onclick="returnToMap()">RETREAT</button>
   </div>
 
-  <!-- ══ GAME COMPLETE ══ -->
+  <!-- COMPLETE -->
   <div id="gameover-screen" class="screen">
     <div class="result-icon">🌍</div>
     <div class="result-title win">ACTIVE OVERRIDE COMPLETE</div>
-    <div class="result-sub">
-      All three proxy voting resolutions secured.<br>
-      The SI Center's engagement campaign was a success.<br>
-      ESG: 3 · Corporations: 0
-    </div>
+    <div class="result-sub">All three proxy voting resolutions secured.<br>ESG: 3 · Corporations: 0</div>
     <div class="resolution-earned">📋 📋 📋 ALL RESOLUTIONS COLLECTED</div>
     <button class="btn-primary" onclick="resetGame()">PLAY AGAIN</button>
     <div class="credits">
-      Assets: Evil Wizard 2 by LuizMelo (CC0) · Synth Cities by ansimuz (CC0)<br>
-      Warrior by Clembod · Music: cyberpunk-street by ansimuz<br>
-      Built with Phaser 3 · <a href="https://github.com/cmeanna/active-override">github.com/cmeanna/active-override</a>
+      Evil Wizard 2 by LuizMelo (CC0) · Synth Cities by ansimuz (CC0)<br>
+      Warrior by Clembod · Samurai by Mattz Art · Capybara by Charlie<br>
+      Built with Phaser 3
     </div>
   </div>
 
 </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.60.0/phaser.min.js"></script>
 <script>
 // ══════════════════════════════════════════
-// GAME DATA
+// DATA
 // ══════════════════════════════════════════
-
-const REPO = 'assets/';
-
 const CHARS = {
   danielle: {
-    name: 'DANIELLE', role: 'Social & Human Rights',
-    hp: 100, maxHp: 100, atk: 4, def: 3, spd: 5,
-    icon: '👩', spriteIdle: 'warrior-idle', spriteAtk: 'warrior-attack', spriteHit: 'warrior-hit',
-    moves: [
-      { name: 'Human Rights Report', power: 18, type: 'social', desc: 'File a detailed HR violation report.' },
-      { name: 'Supply Chain Audit',  power: 14, type: 'social', desc: 'Expose unethical supply chain practices.' },
-      { name: 'Media Escalation',    power: 22, type: 'social', desc: 'Go public. Reputational pressure is real.' },
-      { name: 'Coalition Vote',      power: 28, type: 'governance', desc: 'Rally allied shareholders for a joint vote.', super: true },
+    name:'DANIELLE', role:'Social & Human Rights', hp:100, maxHp:100,
+    spriteIdle:'warrior-idle', spriteAtk:'warrior-attack', spriteHit:'warrior-hit',
+    mapSheet:'assets/warrior_sheetnoeffect.png', mapFrameW:69, mapFrameH:37, mapFrames:6, mapRow:1,
+    moves:[
+      {name:'Human Rights Report',power:18,type:'social'},
+      {name:'Supply Chain Audit', power:14,type:'social'},
+      {name:'Media Escalation',   power:22,type:'social'},
+      {name:'Coalition Vote',     power:28,type:'governance',super:true},
     ]
   },
   peter: {
-    name: 'PETER', role: "Ocean's Health",
-    hp: 120, maxHp: 120, atk: 5, def: 4, spd: 2,
-    icon: '🦫', spriteIdle: 'capybara-idle', spriteAtk: 'capybara-attack', spriteHit: 'capybara-hit',
-    moves: [
-      { name: 'Ocean Pollution Brief', power: 20, type: 'climate', desc: 'Present irrefutable oceanographic data.' },
-      { name: 'Divestment Threat',     power: 16, type: 'governance', desc: 'Threaten to liquidate the entire position.' },
-      { name: 'Board Resolution',      power: 24, type: 'governance', desc: 'Push a binding resolution to the board.' },
-      { name: 'Public Statement',      power: 30, type: 'climate', desc: 'Issue a landmark public statement.', super: true },
+    name:'PETER', role:"Ocean's Health", hp:120, maxHp:120,
+    spriteIdle:'capybara-idle', spriteAtk:'capybara-munch', spriteHit:'capybara-sit',
+    mapSheet:'assets/capybara.png', mapFrameW:51, mapFrameH:67, mapFrames:10, mapRow:7, mapOffsetY:40,
+    moves:[
+      {name:'Ocean Pollution Brief',power:20,type:'climate'},
+      {name:'Divestment Threat',    power:16,type:'governance'},
+      {name:'Board Resolution',     power:24,type:'governance'},
+      {name:'Public Statement',     power:30,type:'climate',super:true},
     ]
   },
   michiel: {
-    name: 'MICHIEL', role: 'Corporate Governance',
-    hp: 110, maxHp: 110, atk: 3, def: 5, spd: 3,
-    icon: '👔', spriteIdle: 'samurai-idle', spriteAtk: 'samurai-attack', spriteHit: 'samurai-hit',
-    moves: [
-      { name: 'Coalition Vote',        power: 18, type: 'governance', desc: 'Coordinate a powerful shareholder coalition.' },
-      { name: 'AGM Season',            power: 20, type: 'governance', desc: 'Strike during annual general meeting season.' },
-      { name: 'Gov Knowledge',         power: 14, type: 'governance', desc: 'Deploy deep governance expertise.' },
-      { name: 'Shareholder Resolution',power: 32, type: 'governance', desc: 'The nuclear option: a binding resolution.', super: true },
+    name:'MICHIEL', role:'Corporate Governance', hp:110, maxHp:110,
+    spriteIdle:'samurai-idle', spriteAtk:'samurai-attack', spriteHit:'samurai-hit',
+    mapSheet:'assets/samurai-run.png', mapFrameW:96, mapFrameH:96, mapFrames:16, mapRow:0,
+    moves:[
+      {name:'Coalition Vote',        power:18,type:'governance'},
+      {name:'AGM Season',            power:20,type:'governance'},
+      {name:'Gov Knowledge',         power:14,type:'governance'},
+      {name:'Shareholder Resolution',power:32,type:'governance',super:true},
     ]
   }
 };
 
 const ENEMIES = {
-  palantir: {
-    name: 'PALANTIR A.I.',
-    org: 'Technologies Inc.',
-    hp: 120, maxHp: 120,
-    weakness: 'governance',
-    icon: '🔮',
-    taunt: ['Our data models predicted you\'d come.', 'Engagement? We\'ve already gamed the outcome.', 'Your proxy vote is in our dataset.'],
-    loseMsg: 'Palantir agrees to enhanced board oversight and data ethics framework.',
-    resolution: 'Palantir Proxy Voting Resolution'
-  },
-  meta: {
-    name: 'META CORP',
-    org: 'Platforms Inc.',
-    hp: 110, maxHp: 110,
-    weakness: 'social',
-    icon: '👁️',
-    taunt: ['We move fast and break things.', 'Your engagement post got 3 likes.', 'Our content moderation is... evolving.'],
-    loseMsg: 'Meta commits to independent human rights audit and content moderation reforms.',
-    resolution: 'Meta Proxy Voting Resolution'
-  },
-  exxon: {
-    name: 'EXXON MOBIL',
-    org: 'Corporation',
-    hp: 130, maxHp: 130,
-    weakness: 'climate',
-    icon: '⛽',
-    taunt: ['We\'ve been doing this since 1870.', 'Net zero by... eventually.', 'Our transition plan is in the mail.'],
-    loseMsg: 'ExxonMobil adopts binding emissions reduction targets aligned with Paris Agreement.',
-    resolution: 'ExxonMobil Proxy Voting Resolution'
-  }
+  palantir:{name:'PALANTIR A.I.',org:'Technologies Inc.',hp:120,maxHp:120,weakness:'governance',
+    taunt:["Our data models predicted you'd come.","Engagement? We've already gamed it.","Your proxy vote is in our dataset."],
+    loseMsg:'Palantir agrees to enhanced board oversight and data ethics framework.',resolution:'Palantir Proxy Voting Resolution'},
+  meta:{name:'META CORP',org:'Platforms Inc.',hp:110,maxHp:110,weakness:'social',
+    taunt:["We move fast and break things.","Your engagement post got 3 likes.","Content moderation is... evolving."],
+    loseMsg:'Meta commits to independent human rights audit.',resolution:'Meta Proxy Voting Resolution'},
+  exxon:{name:'EXXON MOBIL',org:'Corporation',hp:130,maxHp:130,weakness:'climate',
+    taunt:["We've been doing this since 1870.","Net zero by... eventually.","Our transition plan is in the mail."],
+    loseMsg:'ExxonMobil adopts binding emissions reduction targets.',resolution:'ExxonMobil Proxy Voting Resolution'},
+};
+
+const SPRITE_SPECS = {
+  'evil-wizard-idle':  {url:'assets/evil-wizard-idle.png',  frameW:250,frameH:250,frameCount:8, row:0,gridCols:null,offsetY:0},
+  'evil-wizard-attack':{url:'assets/evil-wizard-attack.png',frameW:250,frameH:250,frameCount:8, row:0,gridCols:null,offsetY:0},
+  'evil-wizard-hit':   {url:'assets/evil-wizard-hit.png',   frameW:250,frameH:250,frameCount:3, row:0,gridCols:null,offsetY:0},
+  'evil-wizard-death': {url:'assets/evil-wizard-death.png', frameW:250,frameH:250,frameCount:7, row:0,gridCols:null,offsetY:0},
+  'warrior-idle':  {url:'assets/warrior_sheetnoeffect.png',frameW:69,frameH:37,frameCount:6,row:0, gridCols:6,offsetY:0},
+  'warrior-attack':{url:'assets/warrior_sheetnoeffect.png',frameW:69,frameH:37,frameCount:6,row:4, gridCols:6,offsetY:0},
+  'warrior-hit':   {url:'assets/warrior_sheetnoeffect.png',frameW:69,frameH:37,frameCount:6,row:10,gridCols:6,offsetY:0},
+  'samurai-idle':  {url:'assets/samurai-idle.png',  frameW:96,frameH:96,frameCount:10,row:0,gridCols:null,offsetY:0},
+  'samurai-attack':{url:'assets/samurai-attack.png',frameW:96,frameH:96,frameCount:7, row:0,gridCols:null,offsetY:0},
+  'samurai-hit':   {url:'assets/samurai-hurt.png',  frameW:96,frameH:96,frameCount:4, row:0,gridCols:null,offsetY:0},
+  'capybara-idle': {url:'assets/capybara.png',frameW:51,frameH:67,frameCount:10,row:0,gridCols:10,offsetY:40},
+  'capybara-sit':  {url:'assets/capybara.png',frameW:51,frameH:67,frameCount:3, row:1,gridCols:10,offsetY:40},
+  'capybara-munch':{url:'assets/capybara.png',frameW:51,frameH:67,frameCount:10,row:5,gridCols:10,offsetY:40},
 };
 
 // ══════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════
-
 let state = {
-  selectedChar: null,
-  currentEnemy: null,
-  playerHp: 100,
-  enemyHp: 120,
-  defeated: [],
-  resolutions: 0,
-  battleActive: false,
-  animFrame: 0,
-  animTimer: null,
-  enemyAnimFrame: 0,
-  enemyAnimTimer: null,
+  selectedChar:null, currentEnemy:null,
+  playerHp:100, enemyHp:100,
+  defeated:[], resolutions:0,
+  battleActive:false, phaserGame:null,
 };
 
 // ══════════════════════════════════════════
 // STARFIELD
 // ══════════════════════════════════════════
-
 function initStars() {
   const canvas = document.getElementById('star-canvas');
   const ctx = canvas.getContext('2d');
-  canvas.width = 800; canvas.height = 500;
-  const stars = Array.from({length: 180}, () => ({
-    x: Math.random() * 800, y: Math.random() * 500,
-    r: Math.random() * 1.5 + 0.2,
-    speed: Math.random() * 0.3 + 0.05,
-    alpha: Math.random()
-  }));
+  canvas.width=800; canvas.height=500;
+  const stars = Array.from({length:180},()=>({x:Math.random()*800,y:Math.random()*500,r:Math.random()*1.5+0.2,speed:Math.random()*0.3+0.05,alpha:Math.random()}));
   function draw() {
-    ctx.fillStyle = '#0a0a0f';
-    ctx.fillRect(0, 0, 800, 500);
-    stars.forEach(s => {
-      s.alpha += (Math.random() - 0.5) * 0.02;
-      s.alpha = Math.max(0.1, Math.min(1, s.alpha));
-      ctx.globalAlpha = s.alpha;
-      ctx.fillStyle = '#fff';
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-      ctx.fill();
-      s.x -= s.speed;
-      if (s.x < 0) { s.x = 800; s.y = Math.random() * 500; }
+    ctx.fillStyle='#0a0a0f'; ctx.fillRect(0,0,800,500);
+    stars.forEach(s=>{
+      s.alpha+=(Math.random()-0.5)*0.02; s.alpha=Math.max(0.1,Math.min(1,s.alpha));
+      ctx.globalAlpha=s.alpha; ctx.fillStyle='#fff';
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fill();
+      s.x-=s.speed; if(s.x<0){s.x=800;s.y=Math.random()*500;}
     });
-    ctx.globalAlpha = 1;
-    requestAnimationFrame(draw);
+    ctx.globalAlpha=1; requestAnimationFrame(draw);
   }
   draw();
 }
 
 // ══════════════════════════════════════════
-// SPRITE ANIMATION SYSTEM
+// SPRITE ANIMATION
 // ══════════════════════════════════════════
-
-// Spritesheet specs (measured exactly)
-const SPRITE_SPECS = {
-  // Evil Wizard: horizontal strip, all frames 250x250
-  'evil-wizard-idle':   { url: 'evil-wizard-idle.png',   frameW: 250, frameH: 250, frameCount: 8, row: 0, gridCols: null, offsetY: 0 },
-  'evil-wizard-attack': { url: 'evil-wizard-attack.png', frameW: 250, frameH: 250, frameCount: 8, row: 0, gridCols: null, offsetY: 0 },
-  'evil-wizard-hit':    { url: 'evil-wizard-hit.png',    frameW: 250, frameH: 250, frameCount: 3, row: 0, gridCols: null, offsetY: 0 },
-  'evil-wizard-death':  { url: 'evil-wizard-death.png',  frameW: 250, frameH: 250, frameCount: 7, row: 0, gridCols: null, offsetY: 0 },
-  // Warrior (Danielle): grid 6 cols x 20 rows, frame 69x37
-  'warrior-idle':   { url: 'warrior_sheetnoeffect.png', frameW: 69, frameH: 37, frameCount: 6, row: 0, gridCols: 6, offsetY: 0 },
-  'warrior-attack': { url: 'warrior_sheetnoeffect.png', frameW: 69, frameH: 37, frameCount: 6, row: 4, gridCols: 6, offsetY: 0 },
-  'warrior-hit':    { url: 'warrior_sheetnoeffect.png', frameW: 69, frameH: 37, frameCount: 6, row: 10, gridCols: 6, offsetY: 0 },
-  // Samurai (Michiel): horizontal strips, all frames 96x96
-  'samurai-idle':   { url: 'samurai-idle.png',   frameW: 96, frameH: 96, frameCount: 10, row: 0, gridCols: null, offsetY: 0 },
-  'samurai-attack': { url: 'samurai-attack.png', frameW: 96, frameH: 96, frameCount: 7,  row: 0, gridCols: null, offsetY: 0 },
-  'samurai-hit':    { url: 'samurai-hurt.png',   frameW: 96, frameH: 96, frameCount: 4,  row: 0, gridCols: null, offsetY: 0 },
-  // Capybara (Peter): grid 10 cols x 8 rows + 40px header, frame 51x67
-  'capybara-idle':   { url: 'capybara.png', frameW: 51, frameH: 67, frameCount: 10, row: 0, gridCols: 10, offsetY: 40 },
-  'capybara-attack': { url: 'capybara.png', frameW: 51, frameH: 67, frameCount: 10, row: 5, gridCols: 10, offsetY: 40 },
-  'capybara-hit':    { url: 'capybara.png', frameW: 51, frameH: 67, frameCount: 3,  row: 1, gridCols: 10, offsetY: 40 },
-};
-
-// Cache loaded images
-const imgCache = {};
-
-// Active animation loops — canvasId -> { rafId, stop() }
-const animLoops = {};
-
-function stopAnim(canvasId) {
-  if (animLoops[canvasId]) {
-    cancelAnimationFrame(animLoops[canvasId].rafId);
-    delete animLoops[canvasId];
+const imgCache={}, animLoops={};
+function stopAnim(id){if(animLoops[id]){cancelAnimationFrame(animLoops[id]);delete animLoops[id];}}
+function playAnim(specKey,canvasId,flip,loop,onComplete){
+  const spec=SPRITE_SPECS[specKey]; if(!spec)return;
+  const canvas=document.getElementById(canvasId); if(!canvas)return;
+  const ctx=canvas.getContext('2d'); const cw=canvas.width,ch=canvas.height;
+  function run(img){
+    stopAnim(canvasId);
+    let frame=0,lastTime=0;
+    function tick(ts){
+      if(ts-lastTime>=100){
+        lastTime=ts; ctx.clearRect(0,0,cw,ch);
+        let sx,sy;
+        if(spec.gridCols){sx=(frame%spec.gridCols)*spec.frameW;sy=(spec.offsetY||0)+spec.row*spec.frameH;}
+        else{sx=frame*spec.frameW;sy=spec.offsetY||0;}
+        const scale=Math.min(cw/spec.frameW,ch/spec.frameH)*0.85;
+        const dw=spec.frameW*scale,dh=spec.frameH*scale,dx=(cw-dw)/2,dy=(ch-dh)/2;
+        ctx.save(); if(flip){ctx.translate(cw,0);ctx.scale(-1,1);}
+        ctx.drawImage(img,sx,sy,spec.frameW,spec.frameH,dx,dy,dw,dh);
+        ctx.restore();
+        frame++;
+        if(frame>=spec.frameCount){if(loop){frame=0;}else{if(onComplete)onComplete();return;}}
+      }
+      animLoops[canvasId]=requestAnimationFrame(tick);
+    }
+    animLoops[canvasId]=requestAnimationFrame(tick);
   }
+  if(imgCache[spec.url]){run(imgCache[spec.url]);return;}
+  const img=new Image(); img.crossOrigin='anonymous';
+  img.onload=()=>{imgCache[spec.url]=img;run(img);};
+  img.src=spec.url;
 }
 
-function playAnim(specKey, canvasId, flip, loop, onComplete) {
-  const spec = SPRITE_SPECS[specKey];
-  if (!spec) return;
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
+// ══════════════════════════════════════════
+// PHASER MAP SCENE
+// ══════════════════════════════════════════
+class MapScene extends Phaser.Scene {
+  constructor(){super({key:'MapScene'});}
 
-  function run(img) {
-    stopAnim(canvasId);
-    let frame = 0;
-    let lastTime = 0;
-    const fps = 10; // 10 fps feels right for pixel art
-    const interval = 1000 / fps;
+  preload(){
+    this.load.image('bg-back',  'assets/back.png');
+    this.load.image('bg-mid',   'assets/middle.png');
+    this.load.image('bg-fore',  'assets/foreground.png');
+    const char=CHARS[state.selectedChar];
+    this.load.spritesheet('player-map', char.mapSheet, {
+      frameWidth: char.mapFrameW,
+      frameHeight: char.mapFrameH,
+      margin: 0, spacing: 0,
+    });
+  }
 
-    function tick(ts) {
-      if (ts - lastTime >= interval) {
-        lastTime = ts;
-        ctx.clearRect(0, 0, 96, 96);
+  create(){
+    const WORLD_W=1800, WORLD_H=500;
 
-        // source position
-        let sx, sy;
-        if (spec.gridCols) {
-          // grid spritesheet
-          const col = frame % spec.gridCols;
-          sy = (spec.offsetY || 0) + spec.row * spec.frameH;
-          sx = col * spec.frameW;
-        } else {
-          // horizontal strip
-          sx = frame * spec.frameW;
-          sy = spec.offsetY || 0;
-        }
+    // Parallax bg layers (tiled to world width)
+    this.bgBack  = this.add.tileSprite(0,0,WORLD_W,WORLD_H,'bg-back').setOrigin(0).setAlpha(0.45);
+    this.bgMid   = this.add.tileSprite(0,0,WORLD_W,WORLD_H,'bg-mid').setOrigin(0).setAlpha(0.65);
+    this.bgFore  = this.add.tileSprite(0,0,WORLD_W,WORLD_H,'bg-fore').setOrigin(0).setAlpha(0.85);
 
-        // fit into 96x96 canvas, preserve aspect
-        const scale = Math.min(96 / spec.frameW, 96 / spec.frameH);
-        const dw = spec.frameW * scale;
-        const dh = spec.frameH * scale;
-        const dx = (96 - dw) / 2;
-        const dy = (96 - dh) / 2;
+    // Ground
+    this.add.rectangle(WORLD_W/2, 490, WORLD_W, 20, 0x111111).setDepth(1);
 
-        ctx.save();
-        if (flip) { ctx.translate(96, 0); ctx.scale(-1, 1); }
-        ctx.drawImage(img, sx, sy, spec.frameW, spec.frameH, dx, dy, dw, dh);
-        ctx.restore();
+    // Company buildings
+    const cos=[
+      {key:'palantir',x:380, label:'PALANTIR',  sub:'Technologies Inc.', accentHex:'#4466ff', accent:0x4466ff, weakness:'GOVERNANCE'},
+      {key:'meta',    x:900, label:'META',       sub:'Platforms Inc.',    accentHex:'#1877f2', accent:0x1877f2, weakness:'HUMAN RIGHTS'},
+      {key:'exxon',   x:1420,label:'EXXON MOBIL',sub:'Corporation',      accentHex:'#ff5500', accent:0xff5500, weakness:'CLIMATE'},
+    ];
 
-        frame++;
-        if (frame >= spec.frameCount) {
-          if (loop) {
-            frame = 0;
-          } else {
-            if (onComplete) onComplete();
-            return; // stop
-          }
+    this.buildingZones=[];
+
+    cos.forEach(co=>{
+      const defeated=state.defeated.includes(co.key);
+      const alpha=defeated?0.3:1;
+
+      // Building body
+      const g=this.add.graphics();
+      g.fillStyle(0x0a0a0f,alpha);
+      g.fillRect(co.x-110,200,220,260);
+      g.lineStyle(defeated?1:2,defeated?0x333333:co.accent,alpha);
+      g.strokeRect(co.x-110,200,220,260);
+
+      // Windows
+      if(!defeated){
+        for(let r=0;r<4;r++) for(let c=0;c<3;c++){
+          const wx=co.x-70+c*55,wy=220+r*40;
+          g.fillStyle(Math.random()>0.4?co.accent:0x111111,0.7);
+          g.fillRect(wx,wy,22,20);
         }
       }
-      const rafId = requestAnimationFrame(tick);
-      animLoops[canvasId] = { rafId, stop: () => cancelAnimationFrame(rafId) };
+
+      // Sign
+      g.fillStyle(co.accent,defeated?0.2:0.9);
+      g.fillRect(co.x-90,390,180,32);
+
+      // Text labels
+      this.add.text(co.x,406,co.label,{fontFamily:"'Press Start 2P'",fontSize:'9px',color:defeated?'#333':'#fff'}).setOrigin(0.5);
+      this.add.text(co.x,425,co.sub,{fontFamily:"'Share Tech Mono'",fontSize:'7px',color:defeated?'#222':'#aaa'}).setOrigin(0.5);
+      this.add.text(co.x,438,`WEAKNESS: ${co.weakness}`,{fontFamily:"'Share Tech Mono'",fontSize:'6px',color:defeated?'#222':'#666'}).setOrigin(0.5);
+
+      if(defeated){
+        this.add.text(co.x,330,'✓ RESOLVED',{fontFamily:"'Press Start 2P'",fontSize:'8px',color:'#00ff88'}).setOrigin(0.5);
+      } else {
+        // Neon glow effect on sign
+        this.add.text(co.x,406,co.label,{fontFamily:"'Press Start 2P'",fontSize:'9px',color:co.accentHex}).setOrigin(0.5).setAlpha(0.3);
+        this.buildingZones.push({key:co.key,x:co.x,name:co.label});
+      }
+    });
+
+    // Player setup
+    const char=CHARS[state.selectedChar];
+    try {
+      this.player=this.add.sprite(150,430,'player-map').setDepth(5);
+      const frameRow=char.mapRow||0;
+      const totalCols=char.mapFrameW>0?Math.floor((char.mapSheet.includes('capybara')?576-60:char.mapFrameW*100)/char.mapFrameW):6;
+      // Walk anim: use frames from mapRow
+      const walkStart=frameRow*(char.mapSheet.includes('warrior')?6:char.mapSheet.includes('capybara')?10:16);
+      const walkEnd=walkStart+(char.mapFrames||6)-1;
+      if(!this.anims.exists('p-walk')){
+        this.anims.create({key:'p-walk',frames:this.anims.generateFrameNumbers('player-map',{start:walkStart,end:walkEnd}),frameRate:10,repeat:-1});
+      }
+      if(!this.anims.exists('p-idle')){
+        this.anims.create({key:'p-idle',frames:this.anims.generateFrameNumbers('player-map',{start:0,end:Math.min(5,walkEnd)}),frameRate:6,repeat:-1});
+      }
+      this.player.play('p-idle');
+      const scaleTarget=64/Math.max(char.mapFrameW,char.mapFrameH);
+      this.player.setScale(Math.max(1.5,scaleTarget*2));
+    } catch(e){
+      this.player=this.add.circle(150,430,20,0x00ff88).setDepth(5);
     }
 
-    const rafId = requestAnimationFrame(tick);
-    animLoops[canvasId] = { rafId, stop: () => cancelAnimationFrame(rafId) };
+    // Camera
+    this.cameras.main.setBounds(0,0,WORLD_W,WORLD_H);
+    this.cameras.main.startFollow(this.player,true,0.08,0.08);
+
+    // Keyboard
+    this.keys=this.input.keyboard.addKeys({
+      left: Phaser.Input.Keyboard.KeyCodes.A,
+      right:Phaser.Input.Keyboard.KeyCodes.D,
+      aLeft: Phaser.Input.Keyboard.KeyCodes.LEFT,
+      aRight:Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      enter:Phaser.Input.Keyboard.KeyCodes.ENTER,
+    });
+
+    this.nearEnemy=null;
+    this.enterWasDown=false;
+    this.speed=4;
   }
 
-  const cacheKey = spec.url;
-  if (imgCache[cacheKey]) {
-    run(imgCache[cacheKey]);
-  } else {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => { imgCache[cacheKey] = img; run(img); };
-    img.onerror = () => drawFallbackSprite(canvasId, flip);
-    img.src = REPO + spec.url;
+  update(){
+    const {left,right,aLeft,aRight,enter}=this.keys;
+    const goLeft=left.isDown||aLeft.isDown;
+    const goRight=right.isDown||aRight.isDown;
+
+    if(goLeft){
+      this.player.x-=this.speed;
+      this.player.setFlipX(true);
+      if(this.player.play) try{if(this.player.anims?.currentAnim?.key!=='p-walk')this.player.play('p-walk');}catch(e){}
+    } else if(goRight){
+      this.player.x+=this.speed;
+      this.player.setFlipX(false);
+      if(this.player.play) try{if(this.player.anims?.currentAnim?.key!=='p-walk')this.player.play('p-walk');}catch(e){}
+    } else {
+      if(this.player.play) try{if(this.player.anims?.currentAnim?.key!=='p-idle')this.player.play('p-idle');}catch(e){}
+    }
+
+    this.player.x=Phaser.Math.Clamp(this.player.x,30,1770);
+
+    // Parallax scroll
+    this.bgBack.tilePositionX =this.cameras.main.scrollX*0.08;
+    this.bgMid.tilePositionX  =this.cameras.main.scrollX*0.25;
+    this.bgFore.tilePositionX =this.cameras.main.scrollX*0.5;
+
+    // Proximity check
+    this.nearEnemy=null;
+    this.buildingZones.forEach(bz=>{
+      if(Math.abs(this.player.x-bz.x)<110) this.nearEnemy=bz.key;
+    });
+
+    const prompt=document.getElementById('enter-prompt');
+    if(this.nearEnemy){
+      const e=ENEMIES[this.nearEnemy];
+      prompt.style.display='block';
+      prompt.textContent=`▶ PRESS ENTER TO ENGAGE ${e.name}`;
+    } else {
+      prompt.style.display='none';
+    }
+
+    // Enter triggers battle
+    if(enter.isDown&&!this.enterWasDown&&this.nearEnemy){
+      this.enterWasDown=true;
+      startBattle(this.nearEnemy);
+    }
+    if(!enter.isDown) this.enterWasDown=false;
   }
 }
 
-function drawFallbackSprite(canvasId, isEnemy) {
-  stopAnim(canvasId);
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, 96, 96);
-  // Draw a simple pixel art placeholder instead of emoji
-  ctx.fillStyle = isEnemy ? '#ff4444' : '#00ff88';
-  ctx.fillRect(36, 20, 24, 30);
-  ctx.fillRect(30, 50, 36, 20);
-  ctx.fillStyle = isEnemy ? '#aa2222' : '#009955';
-  ctx.fillRect(38, 22, 20, 20);
-}
-
 // ══════════════════════════════════════════
-// SCREEN MANAGEMENT
+// GAME FLOW
 // ══════════════════════════════════════════
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-// ══════════════════════════════════════════
-// CHARACTER SELECT
-// ══════════════════════════════════════════
-
-function selectChar(key) {
-  state.selectedChar = key;
-  const char = CHARS[key];
-  state.playerHp = char.maxHp;
-
-  document.getElementById('map-player-name').textContent = char.name;
-  document.getElementById('map-player-role').textContent = char.role;
-
+function selectChar(key){
+  state.selectedChar=key;
+  const char=CHARS[key];
+  state.playerHp=char.maxHp;
+  document.getElementById('map-player-name').textContent=char.name;
+  document.getElementById('map-player-role').textContent=char.role;
+  document.getElementById('resolution-count').textContent=state.resolutions;
   showScreen('map-screen');
-  updateMapBuildings();
+  launchMap();
 }
 
-// ══════════════════════════════════════════
-// MAP
-// ══════════════════════════════════════════
-
-function updateMapBuildings() {
-  document.getElementById('resolution-count').textContent = state.resolutions;
-  Object.keys(ENEMIES).forEach(key => {
-    const el = document.getElementById(`building-${key}`);
-    if (!el) return;
-    const badge = el.querySelector('.defeated-badge');
-    if (state.defeated.includes(key)) {
-      el.classList.add('defeated');
-      if (badge) badge.style.display = 'block';
-    } else {
-      el.classList.remove('defeated');
-      if (badge) badge.style.display = 'none';
-    }
+function launchMap(){
+  if(state.phaserGame){state.phaserGame.destroy(true);state.phaserGame=null;}
+  document.getElementById('phaser-container').innerHTML='';
+  state.phaserGame=new Phaser.Game({
+    type:Phaser.AUTO, width:800, height:500,
+    backgroundColor:'#0a0a0f',
+    parent:'phaser-container',
+    scene:MapScene,
+    audio:{noAudio:true},
+    scale:{mode:Phaser.Scale.NONE},
   });
 }
 
-function startBattle(enemyKey) {
-  if (state.defeated.includes(enemyKey)) return;
-  state.currentEnemy = enemyKey;
-  const char = CHARS[state.selectedChar];
-  const enemy = ENEMIES[enemyKey];
+function startBattle(enemyKey){
+  if(state.defeated.includes(enemyKey)) return;
+  state.currentEnemy=enemyKey;
+  const char=CHARS[state.selectedChar];
+  const enemy=ENEMIES[enemyKey];
+  state.playerHp=char.maxHp;
+  state.enemyHp=enemy.maxHp;
 
-  // Reset both HPs fully for each new battle
-  state.playerHp = char.maxHp;
-  state.enemyHp = enemy.maxHp;
-
-  // Update HUDs
-  document.getElementById('player-hud-name').textContent = char.name;
-  document.getElementById('enemy-hud-name').textContent = enemy.name;
-  document.getElementById('enemy-hud-org').textContent = enemy.org;
+  document.getElementById('player-hud-name').textContent=char.name;
+  document.getElementById('enemy-hud-name').textContent=enemy.name;
+  document.getElementById('enemy-hud-org').textContent=enemy.org;
   updateHpBars();
 
-  // Load moves
-  char.moves.forEach((move, i) => {
-    const btn = document.getElementById(`move-${i}`);
-    btn.innerHTML = `${move.name} <span class="move-power ${move.super ? 'super' : ''}">${move.power}</span>`;
-    btn.disabled = false;
+  char.moves.forEach((move,i)=>{
+    const btn=document.getElementById(`move-${i}`);
+    btn.innerHTML=`${move.name} <span class="move-power ${move.super?'super':''}">${move.power}</span>`;
+    btn.disabled=false;
   });
 
-  // Load sprites with correct frame data
-  playAnim(char.spriteIdle, 'player-sprite', false, true);
-  playAnim('evil-wizard-idle', 'enemy-sprite', true, true);
+  playAnim(char.spriteIdle,'player-sprite',false,true);
+  playAnim('evil-wizard-idle','enemy-sprite',true,true);
+  document.getElementById('player-sprite-label').textContent=char.name;
+  document.getElementById('enemy-sprite-label').textContent=enemy.name;
 
-  document.getElementById('player-sprite-label').textContent = char.name;
-  document.getElementById('enemy-sprite-label').textContent = enemy.name;
-
-  setBattleLog(`<span class="highlight">${enemy.name}</span> — "${randomTaunt(enemy)}"`);
-  state.battleActive = true;
+  setBattleLog(`<span class="hl">${enemy.name}</span> — "${enemy.taunt[Math.floor(Math.random()*enemy.taunt.length)]}"`);
+  state.battleActive=true;
   showScreen('battle-screen');
 }
 
-function randomTaunt(enemy) {
-  return enemy.taunt[Math.floor(Math.random() * enemy.taunt.length)];
-}
-
-// ══════════════════════════════════════════
-// BATTLE LOGIC
-// ══════════════════════════════════════════
-
-function useMove(idx) {
-  if (!state.battleActive) return;
-  const char = CHARS[state.selectedChar];
-  const enemy = ENEMIES[state.currentEnemy];
-  const move = char.moves[idx];
-
+function useMove(idx){
+  if(!state.battleActive) return;
+  const char=CHARS[state.selectedChar];
+  const enemy=ENEMIES[state.currentEnemy];
+  const move=char.moves[idx];
   disableMoves(true);
 
-  const isWeak = move.type === enemy.weakness;
-  let dmg = move.power + Math.floor(Math.random() * 8) - 3;
-  if (isWeak) dmg = Math.floor(dmg * 1.5);
+  const isWeak=move.type===enemy.weakness;
+  let dmg=move.power+Math.floor(Math.random()*8)-3;
+  if(isWeak) dmg=Math.floor(dmg*1.5);
+  state.enemyHp=Math.max(0,state.enemyHp-dmg);
 
-  state.enemyHp = Math.max(0, state.enemyHp - dmg);
-
-  let logMsg = `<span class="highlight">${char.name}</span> uses ${move.name}`;
-  if (isWeak) logMsg += ` <span class="weak">— SUPER EFFECTIVE!</span>`;
-  logMsg += ` <span class="damage">(${dmg} dmg)</span>`;
-
-  setBattleLog(logMsg);
+  let log=`<span class="hl">${char.name}</span> uses ${move.name}`;
+  if(isWeak) log+=` <span class="weak">— SUPER EFFECTIVE!</span>`;
+  log+=` <span class="dmg">(${dmg} dmg)</span>`;
+  setBattleLog(log);
   updateHpBars();
-  showDamageFlash(dmg, isWeak);
+  showFlash(dmg,isWeak);
 
-  // Swap sprite to attack then back to idle
-  playAnim(char.spriteAtk, 'player-sprite', false, false, () => {
-    playAnim(char.spriteIdle, 'player-sprite', false, true);
-  });
+  playAnim(char.spriteAtk,'player-sprite',false,false,()=>playAnim(char.spriteIdle,'player-sprite',false,true));
 
-  if (state.enemyHp <= 0) {
-    setTimeout(() => endBattle(true), 800);
-    return;
-  }
-
-  // Enemy turn after delay
-  setTimeout(() => enemyTurn(), 1000);
+  if(state.enemyHp<=0){setTimeout(()=>endBattle(true),800);return;}
+  setTimeout(()=>enemyTurn(),1000);
 }
 
-function enemyTurn() {
-  const char = CHARS[state.selectedChar];
-  const enemy = ENEMIES[state.currentEnemy];
-
-  const atkPower = 12 + Math.floor(Math.random() * 14);
-  state.playerHp = Math.max(0, state.playerHp - atkPower);
-
-  const taunts = ['Counter-engagement initiated.', 'Our lawyers will hear about this.', 'Have you seen our CSR report?', 'We have 40 pages of disclaimers.'];
-  const taunt = taunts[Math.floor(Math.random() * taunts.length)];
-  setBattleLog(`<span class="damage">${enemy.name}</span> hits back! "${taunt}" <span class="damage">(-${atkPower} HP)</span>`);
+function enemyTurn(){
+  const char=CHARS[state.selectedChar];
+  const enemy=ENEMIES[state.currentEnemy];
+  const atk=10+Math.floor(Math.random()*14);
+  state.playerHp=Math.max(0,state.playerHp-atk);
+  setBattleLog(`<span class="dmg">${enemy.name}</span> strikes back! <span class="dmg">(-${atk} HP)</span>`);
   updateHpBars();
-
-  playAnim('evil-wizard-attack', 'enemy-sprite', true, false, () => {
-    playAnim('evil-wizard-idle', 'enemy-sprite', true, true);
-  });
-  playAnim(char.spriteHit, 'player-sprite', false, false, () => {
-    playAnim(char.spriteIdle, 'player-sprite', false, true);
-  });
-
-  if (state.playerHp <= 0) {
-    setTimeout(() => endBattle(false), 800);
-    return;
-  }
-
-  setTimeout(() => {
-    setBattleLog('Choose your next move.');
-    disableMoves(false);
-  }, 600);
+  playAnim('evil-wizard-attack','enemy-sprite',true,false,()=>playAnim('evil-wizard-idle','enemy-sprite',true,true));
+  playAnim(char.spriteHit,'player-sprite',false,false,()=>playAnim(char.spriteIdle,'player-sprite',false,true));
+  if(state.playerHp<=0){setTimeout(()=>endBattle(false),800);return;}
+  setTimeout(()=>{setBattleLog('Choose your next move.');disableMoves(false);},700);
 }
 
-function endBattle(playerWon) {
-  state.battleActive = false;
-  const enemy = ENEMIES[state.currentEnemy];
-  const char = CHARS[state.selectedChar];
-
-  if (playerWon) {
+function endBattle(won){
+  state.battleActive=false;
+  const enemy=ENEMIES[state.currentEnemy];
+  if(won){
     state.defeated.push(state.currentEnemy);
     state.resolutions++;
-    document.getElementById('victory-sub').textContent = enemy.loseMsg;
-    document.getElementById('resolution-earned').textContent = `📋 ${enemy.resolution} SECURED`;
-
-    // Death animation
-    playAnim('evil-wizard-death', 'enemy-sprite', true, false);
-
-    setTimeout(() => {
-      if (state.resolutions >= 3) {
-        showScreen('gameover-screen');
-      } else {
-        showScreen('victory-screen');
-      }
-    }, 600);
+    document.getElementById('victory-sub').textContent=enemy.loseMsg;
+    document.getElementById('resolution-earned').textContent=`📋 ${enemy.resolution} SECURED`;
+    playAnim('evil-wizard-death','enemy-sprite',true,false);
+    setTimeout(()=>state.resolutions>=3?showScreen('gameover-screen'):showScreen('victory-screen'),800);
   } else {
-    document.getElementById('defeat-sub').innerHTML =
-      `${enemy.name} overwhelmed the engagement.<br>Regroup and return stronger.`;
-    playAnim('evil-wizard-attack', 'enemy-sprite', true, false);
-    setTimeout(() => showScreen('defeat-screen'), 600);
+    playAnim('evil-wizard-attack','enemy-sprite',true,false);
+    setTimeout(()=>showScreen('defeat-screen'),600);
   }
 }
 
-// ══════════════════════════════════════════
-// UI HELPERS
-// ══════════════════════════════════════════
-
-function updateHpBars() {
-  const char = CHARS[state.selectedChar];
-  const enemy = ENEMIES[state.currentEnemy];
-
-  const playerPct = Math.max(0, (state.playerHp / char.maxHp) * 100);
-  const enemyPct  = Math.max(0, (state.enemyHp  / enemy.maxHp)  * 100);
-
-  document.getElementById('player-hp-bar').style.width = playerPct + '%';
-  document.getElementById('enemy-hp-bar').style.width  = enemyPct  + '%';
-  document.getElementById('player-hp-text').textContent = `HP: ${state.playerHp} / ${char.maxHp}`;
-  document.getElementById('enemy-hp-text').textContent  = `HP: ${state.enemyHp} / ${enemy.maxHp}`;
-
-  // HP bar color shifts
-  const pBar = document.getElementById('player-hp-bar');
-  pBar.style.background = playerPct > 50 ? '#00ff88' : playerPct > 25 ? '#ffaa00' : '#ff4444';
-}
-
-function setBattleLog(html) {
-  document.getElementById('battle-log').innerHTML = html;
-}
-
-function disableMoves(disabled) {
-  for (let i = 0; i < 4; i++) {
-    document.getElementById(`move-${i}`).disabled = disabled;
-  }
-}
-
-function showDamageFlash(dmg, superEffective) {
-  const dmgEl = document.getElementById('damage-flash');
-  const seEl  = document.getElementById('heal-flash');
-  dmgEl.textContent = `-${dmg}`;
-  dmgEl.classList.add('show');
-  if (superEffective) seEl.classList.add('show');
-  setTimeout(() => {
-    dmgEl.classList.remove('show');
-    seEl.classList.remove('show');
-  }, 700);
-}
-
-function returnToMap() {
-  updateMapBuildings();
+function returnToMap(){
+  document.getElementById('resolution-count').textContent=state.resolutions;
   showScreen('map-screen');
+  launchMap();
 }
 
-function retryBattle() {
-  if (state.currentEnemy) startBattle(state.currentEnemy);
-}
+function retryBattle(){if(state.currentEnemy)startBattle(state.currentEnemy);}
 
-function resetGame() {
-  state = {
-    selectedChar: null, currentEnemy: null,
-    playerHp: 100, enemyHp: 120,
-    defeated: [], resolutions: 0,
-    battleActive: false,
-  };
+function resetGame(){
+  state={selectedChar:null,currentEnemy:null,playerHp:100,enemyHp:100,defeated:[],resolutions:0,battleActive:false,phaserGame:null};
+  if(state.phaserGame){state.phaserGame.destroy(true);}
   showScreen('intro-screen');
 }
 
-// ══════════════════════════════════════════
-// MUSIC
-// ══════════════════════════════════════════
+function updateHpBars(){
+  const char=CHARS[state.selectedChar];
+  const enemy=ENEMIES[state.currentEnemy];
+  const pp=Math.max(0,(state.playerHp/char.maxHp)*100);
+  const ep=Math.max(0,(state.enemyHp/enemy.maxHp)*100);
+  const pb=document.getElementById('player-hp-bar');
+  pb.style.width=pp+'%';
+  pb.style.background=pp>50?'#00ff88':pp>25?'#ffaa00':'#ff4444';
+  document.getElementById('enemy-hp-bar').style.width=ep+'%';
+  document.getElementById('player-hp-text').textContent=`HP: ${state.playerHp} / ${char.maxHp}`;
+  document.getElementById('enemy-hp-text').textContent=`HP: ${state.enemyHp} / ${enemy.maxHp}`;
+}
 
-let audio = null;
-function initMusic() {
-  audio = new Audio(REPO + 'cyberpunk-street.mp3');
-  audio.loop = true;
-  audio.volume = 0.3;
-  // Autoplay on first interaction
-  document.addEventListener('click', () => {
-    if (audio && audio.paused) audio.play().catch(() => {});
-  }, { once: true });
+function setBattleLog(html){document.getElementById('battle-log').innerHTML=html;}
+function disableMoves(d){for(let i=0;i<4;i++)document.getElementById(`move-${i}`).disabled=d;}
+function showFlash(dmg,sup){
+  const e=document.getElementById('damage-flash'),s=document.getElementById('super-flash');
+  e.textContent=`-${dmg}`; e.classList.add('show'); if(sup)s.classList.add('show');
+  setTimeout(()=>{e.classList.remove('show');s.classList.remove('show');},700);
 }
 
 // ══════════════════════════════════════════
 // INIT
 // ══════════════════════════════════════════
-
-window.addEventListener('load', () => {
+window.addEventListener('load',()=>{
   initStars();
-  initMusic();
-  // Animate character select previews
-  playAnim('warrior-idle',  'preview-danielle', false, true);
-  playAnim('capybara-idle', 'preview-peter',    false, true);
-  playAnim('samurai-idle',  'preview-michiel',  false, true);
+  playAnim('warrior-idle', 'preview-danielle',false,true);
+  playAnim('capybara-idle','preview-peter',   false,true);
+  playAnim('samurai-idle', 'preview-michiel', false,true);
 });
 </script>
 </body>
