@@ -289,9 +289,43 @@ const MAP_DATA = [
 // Company building positions on the tilemap (tile coords)
 // These are areas on the map that trigger battles
 const COMPANY_ZONES = [
-  { key: 'palantir', tileX: 24, tileY: 2, w: 6, h: 8,  name: 'PALANTIR',   color: 0x4444ff, label: 'PALANTIR\nTech Inc.\nWEAKNESS: GOVERNANCE' },
-  { key: 'meta',     tileX: 8,  tileY: 6, w: 6, h: 8,  name: 'META',        color: 0x1877f2, label: 'META\nPlatforms\nWEAKNESS: HUMAN RIGHTS' },
-  { key: 'exxon',    tileX: 47, tileY: 0, w: 6, h: 8,  name: 'EXXON MOBIL', color: 0xff4400, label: 'EXXON\nCorporation\nWEAKNESS: CLIMATE' },
+  { key: 'palantir', tileX: 0,  tileY: 3,  w: 18, h: 6,  name: 'PALANTIR',   color: 0x4444ff, label: 'PALANTIR' },
+  { key: 'meta',     tileX: 0,  tileY: 13, w: 18, h: 6,  name: 'META',        color: 0x1877f2, label: 'META' },
+  { key: 'exxon',    tileX: 21, tileY: 13, w: 20, h: 6,  name: 'EXXON MOBIL', color: 0xff4400, label: 'EXXON' },
+];
+
+// Collision map: 0=walkable, 1=blocked
+const COLLISION = [
+  [0,0,0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,0,1,1,1,1],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,1,0,1,1,1,1,1,1],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,0,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,1,1,1],
+  [0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,0,0,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,0,0,1,0,1,0,0,0,0],
+  [0,0,0,0,0,0,0,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,0,0,0],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,0,0,0],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,1,1,0],
+  [1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,1,1,1,1,1,1,1,0,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+  [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0],
+  [0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0],
+  [0,0,0,0,0,0,1,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0],
+  [0,1,0,0,0,0,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,1,0,0],
+  [1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,0,0],
+  [1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,0,0],
+  [1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,0,0],
+  [1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0],
+  [1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0],
+  [1,1,1,1,0,0,1,1,1,0,0,0,1,0,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0],
+  [1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0],
+  [1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0],
+  [1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0],
+  [1,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0],
 ];
 
 // ══════════════════════════════════════════
@@ -311,8 +345,8 @@ const CHARS = {
   },
   peter: {
     name:'PETER', role:"Ocean's Health", hp:120, maxHp:120,
-    spriteIdle:'capybara-idle', spriteAtk:'capybara-munch', spriteHit:'capybara-sit',
-    mapSheet:'assets/capybara.png', mapFrameW:51, mapFrameH:67,
+    spriteIdle:'knight-idle', spriteAtk:'knight-attack', spriteHit:'knight-hurt',
+    mapSheet:'assets/knight-walk.png', mapFrameW:84, mapFrameH:84,
     moves:[
       {name:'Ocean Pollution Brief',power:20,type:'climate'},
       {name:'Divestment Threat',    power:16,type:'governance'},
@@ -335,30 +369,41 @@ const CHARS = {
 
 const ENEMIES = {
   palantir:{name:'PALANTIR A.I.',org:'Technologies Inc.',hp:120,maxHp:120,weakness:'governance',
+    spriteIdle:'monster-eye', spriteAtk:'monster-eye', spriteDeath:'monster-eye',
     taunt:["Our data models predicted you'd come.","Engagement? Already gamed.","Your proxy is in our dataset."],
     loseMsg:'Palantir agrees to enhanced board oversight and data ethics framework.',resolution:'Palantir Proxy Voting Resolution'},
   meta:{name:'META CORP',org:'Platforms Inc.',hp:110,maxHp:110,weakness:'social',
+    spriteIdle:'monster-goblin', spriteAtk:'monster-goblin', spriteDeath:'monster-goblin',
     taunt:["We move fast and break things.","Your post got 3 likes.","Content moderation is evolving."],
     loseMsg:'Meta commits to independent human rights audit.',resolution:'Meta Proxy Voting Resolution'},
   exxon:{name:'EXXON MOBIL',org:'Corporation',hp:130,maxHp:130,weakness:'climate',
+    spriteIdle:'monster-skeleton', spriteAtk:'monster-skeleton', spriteDeath:'monster-skeleton',
     taunt:["We've been here since 1870.","Net zero by... eventually.","Our plan is in the mail."],
     loseMsg:'ExxonMobil adopts binding emissions reduction targets.',resolution:'ExxonMobil Proxy Voting Resolution'},
 };
 
 const SPRITE_SPECS = {
+  // Evil Wizard (kept as fallback)
   'evil-wizard-idle':  {url:'assets/evil-wizard-idle.png',  frameW:250,frameH:250,frameCount:8, row:0,gridCols:null,offsetY:0},
   'evil-wizard-attack':{url:'assets/evil-wizard-attack.png',frameW:250,frameH:250,frameCount:8, row:0,gridCols:null,offsetY:0},
   'evil-wizard-hit':   {url:'assets/evil-wizard-hit.png',   frameW:250,frameH:250,frameCount:3, row:0,gridCols:null,offsetY:0},
   'evil-wizard-death': {url:'assets/evil-wizard-death.png', frameW:250,frameH:250,frameCount:7, row:0,gridCols:null,offsetY:0},
+  // Warrior (Danielle)
   'warrior-idle':  {url:'assets/warrior_sheetnoeffect.png',frameW:69,frameH:37,frameCount:6,row:0, gridCols:6,offsetY:0},
   'warrior-attack':{url:'assets/warrior_sheetnoeffect.png',frameW:69,frameH:37,frameCount:6,row:4, gridCols:6,offsetY:0},
   'warrior-hit':   {url:'assets/warrior_sheetnoeffect.png',frameW:69,frameH:37,frameCount:6,row:10,gridCols:6,offsetY:0},
+  // Samurai (Michiel)
   'samurai-idle':  {url:'assets/samurai-idle.png',  frameW:96,frameH:96,frameCount:10,row:0,gridCols:null,offsetY:0},
   'samurai-attack':{url:'assets/samurai-attack.png',frameW:96,frameH:96,frameCount:7, row:0,gridCols:null,offsetY:0},
   'samurai-hit':   {url:'assets/samurai-hurt.png',  frameW:96,frameH:96,frameCount:4, row:0,gridCols:null,offsetY:0},
-  'capybara-idle': {url:'assets/capybara.png',frameW:51,frameH:67,frameCount:10,row:0,gridCols:10,offsetY:40},
-  'capybara-sit':  {url:'assets/capybara.png',frameW:51,frameH:67,frameCount:3, row:1,gridCols:10,offsetY:40},
-  'capybara-munch':{url:'assets/capybara.png',frameW:51,frameH:67,frameCount:10,row:5,gridCols:10,offsetY:40},
+  // Knight (Peter) - 84x84px horizontal strips
+  'knight-idle':  {url:'assets/knight-idle.png',  frameW:84,frameH:84,frameCount:8,row:0,gridCols:null,offsetY:0},
+  'knight-attack':{url:'assets/knight-attack.png',frameW:84,frameH:84,frameCount:6,row:0,gridCols:null,offsetY:0},
+  'knight-hurt':  {url:'assets/knight-hurt.png',  frameW:84,frameH:84,frameCount:4,row:0,gridCols:null,offsetY:0},
+  // Monsters (bosses) - 150x150px horizontal strips
+  'monster-eye':      {url:'assets/monster-eye.png',      frameW:150,frameH:150,frameCount:6, row:0,gridCols:null,offsetY:0},
+  'monster-goblin':   {url:'assets/monster-goblin.png',   frameW:150,frameH:150,frameCount:12,row:0,gridCols:null,offsetY:0},
+  'monster-skeleton': {url:'assets/monster-skeleton.png', frameW:150,frameH:150,frameCount:6, row:0,gridCols:null,offsetY:0},
 };
 
 // ══════════════════════════════════════════
@@ -546,7 +591,7 @@ class MapScene extends Phaser.Scene {
 
     try {
       this.player = this.add.sprite(startX, startY, 'player-map').setDepth(10);
-      this.player.setScale(SCALE * 0.8);
+      this.player.setScale(1.5);
 
       if (!this.anims.exists('p-walk')) {
         this.anims.create({
@@ -597,10 +642,24 @@ class MapScene extends Phaser.Scene {
     const goDown  = k.down.isDown  || k.aDown.isDown;
     const moving  = goLeft || goRight || goUp || goDown;
 
-    if (goLeft)  { this.player.x -= this.speed; if(this.player.setFlipX) this.player.setFlipX(true); }
-    if (goRight) { this.player.x += this.speed; if(this.player.setFlipX) this.player.setFlipX(false); }
-    if (goUp)    this.player.y -= this.speed;
-    if (goDown)  this.player.y += this.speed;
+    // Helper: check if world position is walkable
+    const isWalkable = (wx, wy) => {
+      const tx = Math.floor(wx / SCALED_TILE);
+      const ty = Math.floor(wy / SCALED_TILE);
+      if (tx < 0 || ty < 0 || tx >= MAP_COLS || ty >= MAP_ROWS) return false;
+      return COLLISION[ty][tx] === 0;
+    };
+
+    if (goLeft)  {
+      const nx = this.player.x - this.speed;
+      if (isWalkable(nx - 8, this.player.y)) { this.player.x = nx; if(this.player.setFlipX) this.player.setFlipX(true); }
+    }
+    if (goRight) {
+      const nx = this.player.x + this.speed;
+      if (isWalkable(nx + 8, this.player.y)) { this.player.x = nx; if(this.player.setFlipX) this.player.setFlipX(false); }
+    }
+    if (goUp)    { const ny = this.player.y - this.speed; if (isWalkable(this.player.x, ny - 8)) this.player.y = ny; }
+    if (goDown)  { const ny = this.player.y + this.speed; if (isWalkable(this.player.x, ny + 8)) this.player.y = ny; }
 
     // Clamp to world
     this.player.x = Phaser.Math.Clamp(this.player.x, 0, MAP_COLS * SCALED_TILE);
@@ -695,7 +754,7 @@ function startBattle(enemyKey){
   });
 
   playAnim(char.spriteIdle,'player-sprite',false,true);
-  playAnim('evil-wizard-idle','enemy-sprite',true,true);
+  playAnim(enemy.spriteIdle,'enemy-sprite',true,true);
   document.getElementById('player-sprite-label').textContent=char.name;
   document.getElementById('enemy-sprite-label').textContent=enemy.name;
   setBattleLog(`<span class="hl">${enemy.name}</span> — "${enemy.taunt[Math.floor(Math.random()*enemy.taunt.length)]}"`);
@@ -734,7 +793,7 @@ function enemyTurn(){
   state.playerHp=Math.max(0,state.playerHp-atk);
   setBattleLog(`<span class="dmg">${enemy.name}</span> strikes back! <span class="dmg">(-${atk} HP)</span>`);
   updateHpBars();
-  playAnim('evil-wizard-attack','enemy-sprite',true,false,()=>playAnim('evil-wizard-idle','enemy-sprite',true,true));
+  playAnim(enemy.spriteAtk,'enemy-sprite',true,false,()=>playAnim(enemy.spriteIdle,'enemy-sprite',true,true));
   playAnim(char.spriteHit,'player-sprite',false,false,()=>playAnim(char.spriteIdle,'player-sprite',false,true));
   if(state.playerHp<=0){setTimeout(()=>endBattle(false),800);return;}
   setTimeout(()=>{setBattleLog('Choose your next move.');disableMoves(false);},700);
@@ -748,10 +807,10 @@ function endBattle(won){
     state.resolutions++;
     document.getElementById('victory-sub').textContent=enemy.loseMsg;
     document.getElementById('resolution-earned').textContent=`📋 ${enemy.resolution} SECURED`;
-    playAnim('evil-wizard-death','enemy-sprite',true,false);
+    playAnim(enemy.spriteDeath,'enemy-sprite',true,false);
     setTimeout(()=>state.resolutions>=3?showScreen('gameover-screen'):showScreen('victory-screen'),800);
   } else {
-    playAnim('evil-wizard-attack','enemy-sprite',true,false);
+    playAnim(enemy.spriteAtk,'enemy-sprite',true,false);
     setTimeout(()=>showScreen('defeat-screen'),600);
   }
 }
@@ -793,9 +852,9 @@ function showFlash(dmg,sup){
 
 window.addEventListener('load',()=>{
   initStars();
-  playAnim('warrior-idle', 'preview-danielle',false,true);
-  playAnim('capybara-idle','preview-peter',   false,true);
-  playAnim('samurai-idle', 'preview-michiel', false,true);
+  playAnim('warrior-idle','preview-danielle',false,true);
+  playAnim('knight-idle', 'preview-peter',   false,true);
+  playAnim('samurai-idle','preview-michiel', false,true);
 });
 </script>
 </body>
