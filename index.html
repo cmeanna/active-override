@@ -201,10 +201,22 @@
   .map-bg {
     position: absolute;
     inset: 0;
-    background:
-      radial-gradient(ellipse at 20% 50%, #0d1a0d 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 30%, #0a0d1a 0%, transparent 50%),
-      #0a0a0f;
+    overflow: hidden;
+    background: linear-gradient(180deg, #0a0d1a 0%, #0d1a0d 100%);
+  }
+  .map-bg-img {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    image-rendering: pixelated;
+  }
+  .map-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
   }
   .map-header {
     position: relative;
@@ -533,7 +545,7 @@
     <div class="char-cards">
 
       <div class="char-card" onclick="selectChar('danielle')">
-        <span class="char-icon">👩</span>
+        <canvas id="preview-danielle" width="96" height="96" style="display:block;margin:0 auto 8px;image-rendering:pixelated"></canvas>
         <div class="char-name">DANIELLE</div>
         <div class="char-role">SOCIAL & HUMAN RIGHTS</div>
         <div class="char-stat">ATK <span>★★★★☆</span></div>
@@ -547,7 +559,7 @@
       </div>
 
       <div class="char-card" onclick="selectChar('peter')">
-        <span class="char-icon">🧔</span>
+        <canvas id="preview-peter" width="96" height="96" style="display:block;margin:0 auto 8px;image-rendering:pixelated"></canvas>
         <div class="char-name">PETER</div>
         <div class="char-role">OCEAN'S HEALTH</div>
         <div class="char-stat">ATK <span>★★★★★</span></div>
@@ -561,7 +573,7 @@
       </div>
 
       <div class="char-card" onclick="selectChar('michiel')">
-        <span class="char-icon">👔</span>
+        <canvas id="preview-michiel" width="96" height="96" style="display:block;margin:0 auto 8px;image-rendering:pixelated"></canvas>
         <div class="char-name">MICHIEL</div>
         <div class="char-role">CORPORATE GOVERNANCE</div>
         <div class="char-stat">ATK <span>★★★☆☆</span></div>
@@ -579,7 +591,12 @@
 
   <!-- ══ MAP ══ -->
   <div id="map-screen" class="screen">
-    <div class="map-bg"></div>
+    <div class="map-bg">
+      <img class="map-bg-img" src="assets/back.png" alt="" style="opacity:0.4">
+      <img class="map-bg-img" src="assets/middle.png" alt="" style="opacity:0.5">
+      <img class="map-bg-img" src="assets/foreground.png" alt="" style="opacity:0.6">
+      <div class="map-bg-overlay"></div>
+    </div>
     <div class="map-header">
       <div>
         <div class="map-player-name" id="map-player-name">—</div>
@@ -714,7 +731,7 @@ const CHARS = {
   danielle: {
     name: 'DANIELLE', role: 'Social & Human Rights',
     hp: 100, maxHp: 100, atk: 4, def: 3, spd: 5,
-    icon: '👩',
+    icon: '👩', spriteIdle: 'warrior-idle', spriteAtk: 'warrior-attack', spriteHit: 'warrior-hit',
     moves: [
       { name: 'Human Rights Report', power: 18, type: 'social', desc: 'File a detailed HR violation report.' },
       { name: 'Supply Chain Audit',  power: 14, type: 'social', desc: 'Expose unethical supply chain practices.' },
@@ -725,7 +742,7 @@ const CHARS = {
   peter: {
     name: 'PETER', role: "Ocean's Health",
     hp: 120, maxHp: 120, atk: 5, def: 4, spd: 2,
-    icon: '🧔',
+    icon: '🦫', spriteIdle: 'capybara-idle', spriteAtk: 'capybara-attack', spriteHit: 'capybara-hit',
     moves: [
       { name: 'Ocean Pollution Brief', power: 20, type: 'climate', desc: 'Present irrefutable oceanographic data.' },
       { name: 'Divestment Threat',     power: 16, type: 'governance', desc: 'Threaten to liquidate the entire position.' },
@@ -736,11 +753,11 @@ const CHARS = {
   michiel: {
     name: 'MICHIEL', role: 'Corporate Governance',
     hp: 110, maxHp: 110, atk: 3, def: 5, spd: 3,
-    icon: '👔',
+    icon: '👔', spriteIdle: 'samurai-idle', spriteAtk: 'samurai-attack', spriteHit: 'samurai-hit',
     moves: [
       { name: 'Coalition Vote',        power: 18, type: 'governance', desc: 'Coordinate a powerful shareholder coalition.' },
       { name: 'AGM Season',            power: 20, type: 'governance', desc: 'Strike during annual general meeting season.' },
-      { name: 'Gov Knowledge',         power: 14, type: 'governance', desc: 'Deploy deep governance expertise.', super: false },
+      { name: 'Gov Knowledge',         power: 14, type: 'governance', desc: 'Deploy deep governance expertise.' },
       { name: 'Shareholder Resolution',power: 32, type: 'governance', desc: 'The nuclear option: a binding resolution.', super: true },
     ]
   }
@@ -838,15 +855,22 @@ function initStars() {
 // Spritesheet specs (measured exactly)
 const SPRITE_SPECS = {
   // Evil Wizard: horizontal strip, all frames 250x250
-  'evil-wizard-idle':   { url: 'evil-wizard-idle.png',   frameW: 250, frameH: 250, frameCount: 8,  row: 0, gridCols: null },
-  'evil-wizard-attack': { url: 'evil-wizard-attack.png', frameW: 250, frameH: 250, frameCount: 8,  row: 0, gridCols: null },
-  'evil-wizard-attack2':{ url: 'evil-wizard-attack.png', frameW: 250, frameH: 250, frameCount: 8,  row: 0, gridCols: null },
-  'evil-wizard-hit':    { url: 'evil-wizard-hit.png',    frameW: 250, frameH: 250, frameCount: 3,  row: 0, gridCols: null },
-  'evil-wizard-death':  { url: 'evil-wizard-death.png',  frameW: 250, frameH: 250, frameCount: 7,  row: 0, gridCols: null },
-  // Warrior: grid 6 cols x 10 rows, frame 69x74
-  'warrior-idle':       { url: 'warrior_sheetnoeffect.png', frameW: 69, frameH: 74, frameCount: 6, row: 0, gridCols: 6 },
-  'warrior-attack':     { url: 'warrior_sheetnoeffect.png', frameW: 69, frameH: 74, frameCount: 6, row: 2, gridCols: 6 },
-  'warrior-hit':        { url: 'warrior_sheetnoeffect.png', frameW: 69, frameH: 74, frameCount: 6, row: 5, gridCols: 6 },
+  'evil-wizard-idle':   { url: 'evil-wizard-idle.png',   frameW: 250, frameH: 250, frameCount: 8, row: 0, gridCols: null, offsetY: 0 },
+  'evil-wizard-attack': { url: 'evil-wizard-attack.png', frameW: 250, frameH: 250, frameCount: 8, row: 0, gridCols: null, offsetY: 0 },
+  'evil-wizard-hit':    { url: 'evil-wizard-hit.png',    frameW: 250, frameH: 250, frameCount: 3, row: 0, gridCols: null, offsetY: 0 },
+  'evil-wizard-death':  { url: 'evil-wizard-death.png',  frameW: 250, frameH: 250, frameCount: 7, row: 0, gridCols: null, offsetY: 0 },
+  // Warrior (Danielle): grid 6 cols x 20 rows, frame 69x37
+  'warrior-idle':   { url: 'warrior_sheetnoeffect.png', frameW: 69, frameH: 37, frameCount: 6, row: 0, gridCols: 6, offsetY: 0 },
+  'warrior-attack': { url: 'warrior_sheetnoeffect.png', frameW: 69, frameH: 37, frameCount: 6, row: 4, gridCols: 6, offsetY: 0 },
+  'warrior-hit':    { url: 'warrior_sheetnoeffect.png', frameW: 69, frameH: 37, frameCount: 6, row: 10, gridCols: 6, offsetY: 0 },
+  // Samurai (Michiel): horizontal strips, all frames 96x96
+  'samurai-idle':   { url: 'samurai-idle.png',   frameW: 96, frameH: 96, frameCount: 10, row: 0, gridCols: null, offsetY: 0 },
+  'samurai-attack': { url: 'samurai-attack.png', frameW: 96, frameH: 96, frameCount: 7,  row: 0, gridCols: null, offsetY: 0 },
+  'samurai-hit':    { url: 'samurai-hurt.png',   frameW: 96, frameH: 96, frameCount: 4,  row: 0, gridCols: null, offsetY: 0 },
+  // Capybara (Peter): grid 10 cols x 8 rows + 40px header, frame 51x67
+  'capybara-idle':   { url: 'capybara.png', frameW: 51, frameH: 67, frameCount: 10, row: 0, gridCols: 10, offsetY: 40 },
+  'capybara-attack': { url: 'capybara.png', frameW: 51, frameH: 67, frameCount: 10, row: 5, gridCols: 10, offsetY: 40 },
+  'capybara-hit':    { url: 'capybara.png', frameW: 51, frameH: 67, frameCount: 3,  row: 1, gridCols: 10, offsetY: 40 },
 };
 
 // Cache loaded images
@@ -886,12 +910,12 @@ function playAnim(specKey, canvasId, flip, loop, onComplete) {
         if (spec.gridCols) {
           // grid spritesheet
           const col = frame % spec.gridCols;
-          sy = spec.row * spec.frameH;
+          sy = (spec.offsetY || 0) + spec.row * spec.frameH;
           sx = col * spec.frameW;
         } else {
           // horizontal strip
           sx = frame * spec.frameW;
-          sy = 0;
+          sy = spec.offsetY || 0;
         }
 
         // fit into 96x96 canvas, preserve aspect
@@ -931,20 +955,23 @@ function playAnim(specKey, canvasId, flip, loop, onComplete) {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => { imgCache[cacheKey] = img; run(img); };
-    img.onerror = () => drawFallbackSprite(canvasId, flip ? '🧙' : '🦸');
+    img.onerror = () => drawFallbackSprite(canvasId, flip);
     img.src = REPO + spec.url;
   }
 }
 
-function drawFallbackSprite(canvasId, emoji) {
+function drawFallbackSprite(canvasId, isEnemy) {
   stopAnim(canvasId);
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, 96, 96);
-  ctx.font = '52px serif';
-  ctx.textAlign = 'center';
-  ctx.fillText(emoji, 48, 64);
+  // Draw a simple pixel art placeholder instead of emoji
+  ctx.fillStyle = isEnemy ? '#ff4444' : '#00ff88';
+  ctx.fillRect(36, 20, 24, 30);
+  ctx.fillRect(30, 50, 36, 20);
+  ctx.fillStyle = isEnemy ? '#aa2222' : '#009955';
+  ctx.fillRect(38, 22, 20, 20);
 }
 
 // ══════════════════════════════════════════
@@ -998,9 +1025,9 @@ function startBattle(enemyKey) {
   const char = CHARS[state.selectedChar];
   const enemy = ENEMIES[enemyKey];
 
-  // Reset battle HP
+  // Reset both HPs fully for each new battle
+  state.playerHp = char.maxHp;
   state.enemyHp = enemy.maxHp;
-  // Player HP carries over (persistence between battles)
 
   // Update HUDs
   document.getElementById('player-hud-name').textContent = char.name;
@@ -1016,8 +1043,8 @@ function startBattle(enemyKey) {
   });
 
   // Load sprites with correct frame data
-  playAnim('warrior-idle',     'player-sprite', false, true);
-  playAnim('evil-wizard-idle', 'enemy-sprite',  true,  true);
+  playAnim(char.spriteIdle, 'player-sprite', false, true);
+  playAnim('evil-wizard-idle', 'enemy-sprite', true, true);
 
   document.getElementById('player-sprite-label').textContent = char.name;
   document.getElementById('enemy-sprite-label').textContent = enemy.name;
@@ -1058,8 +1085,8 @@ function useMove(idx) {
   showDamageFlash(dmg, isWeak);
 
   // Swap sprite to attack then back to idle
-  playAnim('warrior-attack', 'player-sprite', false, false, () => {
-    playAnim('warrior-idle', 'player-sprite', false, true);
+  playAnim(char.spriteAtk, 'player-sprite', false, false, () => {
+    playAnim(char.spriteIdle, 'player-sprite', false, true);
   });
 
   if (state.enemyHp <= 0) {
@@ -1086,8 +1113,8 @@ function enemyTurn() {
   playAnim('evil-wizard-attack', 'enemy-sprite', true, false, () => {
     playAnim('evil-wizard-idle', 'enemy-sprite', true, true);
   });
-  playAnim('warrior-hit', 'player-sprite', false, false, () => {
-    playAnim('warrior-idle', 'player-sprite', false, true);
+  playAnim(char.spriteHit, 'player-sprite', false, false, () => {
+    playAnim(char.spriteIdle, 'player-sprite', false, true);
   });
 
   if (state.playerHp <= 0) {
@@ -1214,6 +1241,10 @@ function initMusic() {
 window.addEventListener('load', () => {
   initStars();
   initMusic();
+  // Animate character select previews
+  playAnim('warrior-idle',  'preview-danielle', false, true);
+  playAnim('capybara-idle', 'preview-peter',    false, true);
+  playAnim('samurai-idle',  'preview-michiel',  false, true);
 });
 </script>
 </body>
