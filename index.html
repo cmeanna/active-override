@@ -38,17 +38,17 @@
   .char-move-pill { display: inline-block; font-size: 5px; color: #888; border: 1px solid #222; padding: 2px 5px; margin: 2px 1px; font-family: 'Share Tech Mono', monospace; }
 
   /* MAP */
-  #map-screen { background: #0a0a0f; padding: 0; }
+  #map-screen { background: #111; padding: 0; }
   #phaser-container { position: absolute; inset: 0; }
-  #map-ui { position: absolute; top: 0; left: 0; right: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: linear-gradient(180deg,rgba(0,0,0,0.85) 0%,transparent 100%); pointer-events: none; }
+  #map-ui { position: absolute; top: 0; left: 0; right: 0; z-index: 20; display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #1a1a1a; pointer-events: none; }
   .map-player-name-ui { font-size: 8px; color: #00ff88; }
   .map-player-role-ui { font-size: 6px; color: #555; margin-top: 2px; }
-  .map-title-ui { font-size: 8px; color: #333; letter-spacing: 3px; }
+  .map-title-ui { font-size: 7px; color: #333; letter-spacing: 3px; }
   .map-res-ui { font-size: 6px; color: #555; }
   .map-res-ui span { color: #00ff88; }
-  #enter-prompt { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); font-size: 8px; color: #ffaa00; z-index: 20; animation: blink 1s ease-in-out infinite; pointer-events: none; display: none; text-align: center; white-space: nowrap; }
-  #wasd-hint { position: absolute; bottom: 8px; right: 12px; font-size: 6px; color: #333; z-index: 20; pointer-events: none; }
-  @keyframes blink { 0%,100%{opacity:1}50%{opacity:0} }
+  #enter-prompt { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); font-size: 7px; color: #ffaa00; z-index: 20; animation: blink 1s ease-in-out infinite; pointer-events: none; display: none; text-align: center; white-space: nowrap; background: rgba(0,0,0,0.8); padding: 6px 12px; border: 1px solid #ffaa0066; }
+  #wasd-hint { position: absolute; bottom: 8px; right: 10px; font-size: 5px; color: #333; z-index: 20; pointer-events: none; }
+  @keyframes blink { 0%,100%{opacity:1}50%{opacity:0.3} }
 
   /* BATTLE */
   #battle-screen { background: #0a0a0f; padding: 0; }
@@ -162,7 +162,7 @@
       <div class="map-res-ui">RESOLUTIONS: <span id="resolution-count">0</span>/3</div>
     </div>
     <div id="enter-prompt">▶ PRESS ENTER TO ENGAGE</div>
-    <div id="wasd-hint">WASD / ← → TO MOVE</div>
+    <div id="wasd-hint">WASD / ARROWS TO MOVE</div>
   </div>
 
   <!-- BATTLE -->
@@ -227,7 +227,7 @@
   <div id="defeat-screen" class="screen">
     <div class="result-icon">💼</div>
     <div class="result-title lose">ENGAGEMENT FAILED</div>
-    <div class="result-sub" id="defeat-sub">Regroup and try again.</div>
+    <div class="result-sub">Regroup and try again.</div>
     <button class="btn-primary mt16" onclick="retryBattle()">TRY AGAIN</button>
     <button class="btn-primary mt8" style="border-color:#333;color:#333;" onclick="returnToMap()">RETREAT</button>
   </div>
@@ -240,23 +240,68 @@
     <div class="resolution-earned">📋 📋 📋 ALL RESOLUTIONS COLLECTED</div>
     <button class="btn-primary" onclick="resetGame()">PLAY AGAIN</button>
     <div class="credits">
-      Evil Wizard 2 by LuizMelo (CC0) · Synth Cities by ansimuz (CC0)<br>
-      Warrior by Clembod · Samurai by Mattz Art · Capybara by Charlie<br>
+      Kenney Pico-8 City (CC0) · Evil Wizard 2 by LuizMelo (CC0)<br>
+      Synth Cities by ansimuz (CC0) · Warrior by Clembod · Samurai by Mattz Art<br>
       Built with Phaser 3
     </div>
   </div>
 
 </div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.60.0/phaser.min.js"></script>
 <script>
 // ══════════════════════════════════════════
-// DATA
+// MAP DATA (from Kenney Pico-8 City sample)
+// ══════════════════════════════════════════
+const MAP_DATA = [
+  [45,45,45,241,242,243,244,45,246,247,248,249,45,251,252,253,254,46,289,290,297,44,45,51,3,51,3,3,27,3,36,26,40,40,40,40,40,40,40,40,44,46,289,290,291,44,46,1,1,1,25,1,1,1,1],
+  [45,52,45,45,45,45,45,45,52,28,45,45,45,45,28,45,45,46,289,290,297,44,45,3,3,51,3,136,137,138,36,40,50,26,26,40,40,40,40,40,44,71,289,290,291,72,46,1,25,1,1,1,1,1,1],
+  [69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,70,289,290,297,44,45,3,3,3,3,160,161,162,36,40,26,40,40,40,40,40,40,40,44,46,289,343,291,44,46,1,1,49,49,1,1,1,49],
+  [266,266,270,266,266,266,266,266,266,266,266,266,266,266,266,270,266,266,293,290,297,44,45,3,3,3,3,193,242,244,36,50,40,40,40,40,40,56,40,40,44,46,337,338,339,44,46,1,1,49,1,1,1,1,1],
+  [290,290,294,290,290,290,290,290,290,290,290,290,290,290,290,294,290,343,290,290,297,72,45,35,35,35,27,35,61,35,36,40,40,40,40,40,40,40,40,40,44,46,289,290,291,44,46,1,1,1,25,1,1,1,1],
+  [314,314,318,314,314,314,314,314,314,314,314,314,314,314,314,318,314,314,269,290,297,44,52,35,142,143,144,35,13,59,60,97,98,99,100,40,40,40,56,40,44,71,289,290,291,72,47,107,108,109,109,110,49,1,1],
+  [108,109,110,21,21,21,21,102,103,104,105,21,21,21,21,21,21,22,289,290,297,44,45,35,166,167,168,35,36,40,20,121,122,123,124,21,102,103,104,105,48,46,289,343,291,44,45,131,87,133,87,134,21,21,21],
+  [132,133,134,67,67,67,67,126,127,82,129,67,97,98,99,100,45,46,289,290,297,44,45,35,208,257,259,62,36,26,44,145,146,147,148,45,126,127,128,129,52,46,289,290,291,44,52,155,156,157,157,158,109,110,45],
+  [156,157,158,40,40,40,40,150,151,152,153,40,121,122,123,124,45,71,289,290,297,72,45,35,35,61,35,35,36,56,44,179,180,181,182,45,150,151,152,153,45,46,289,290,291,44,45,179,181,181,181,182,133,134,45],
+  [181,181,182,1,102,103,103,184,185,189,187,1,121,122,122,124,45,46,289,290,297,44,45,35,35,35,35,35,36,40,44,179,180,181,182,45,261,261,261,261,45,71,289,290,291,72,45,179,263,181,181,182,157,158,45],
+  [181,181,182,1,126,127,127,184,186,185,187,49,145,146,147,148,52,46,289,290,297,44,28,27,51,35,35,35,36,40,44,203,204,205,206,45,198,199,200,201,45,46,289,290,291,44,45,203,204,205,205,206,205,206,52],
+  [204,205,206,45,150,151,151,232,234,233,235,45,263,263,263,263,45,46,337,338,297,44,45,21,21,21,21,21,21,97,98,98,98,100,45,52,45,28,45,45,45,46,337,338,339,44,45,45,28,45,45,45,45,45,45],
+  [45,45,45,28,256,258,258,256,257,258,259,45,246,247,200,201,45,71,289,290,297,68,69,69,69,69,69,69,69,121,122,122,77,124,69,69,69,69,69,69,69,70,289,290,291,68,69,69,69,69,69,69,69,69,69],
+  [69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,70,289,290,297,266,266,266,266,266,266,266,266,121,122,123,122,124,266,266,270,266,266,266,266,266,293,290,292,266,266,344,344,270,266,266,266,266,266],
+  [266,266,266,266,266,266,266,266,266,266,266,266,266,266,266,270,266,266,293,290,297,290,290,102,103,103,104,105,290,145,146,146,146,148,290,290,294,290,290,290,343,290,290,290,290,290,290,290,290,294,290,343,290,290,290],
+  [343,290,290,290,290,290,290,290,290,290,290,290,290,290,290,294,290,290,290,290,297,314,314,126,82,127,82,129,314,169,171,170,171,172,314,314,318,314,314,314,314,314,314,314,314,314,314,314,314,318,269,290,268,314,314],
+  [272,272,272,272,272,272,272,272,272,272,272,272,272,272,272,272,272,272,272,272,321,20,21,150,151,151,152,153,21,169,219,219,219,172,21,21,21,21,21,21,21,21,21,21,21,21,21,21,21,22,289,290,291,20,21],
+  [21,21,21,21,21,22,289,290,291,20,21,21,21,21,21,21,21,21,21,21,21,48,45,261,261,261,261,261,28,169,171,170,171,172,45,45,45,45,52,45,45,45,45,45,45,45,45,45,45,46,337,338,339,44,45],
+  [45,45,45,28,45,46,289,290,291,44,46,67,66,67,67,67,67,44,46,67,67,67,44,246,247,248,248,249,45,193,194,195,195,196,45,23,69,69,69,69,24,23,69,69,69,69,69,69,24,46,289,290,291,44,45],
+  [67,66,67,67,44,46,289,290,291,44,46,26,40,40,40,40,40,44,46,40,40,26,44,52,28,45,45,45,45,45,28,45,45,45,45,46,67,67,67,67,44,46,67,67,66,67,67,67,44,71,289,290,291,72,45],
+  [2,2,50,40,44,46,337,338,339,44,46,40,40,40,40,26,26,68,70,26,26,40,68,24,45,45,46,45,45,45,52,45,45,45,45,46,40,50,40,40,44,46,40,40,40,40,40,40,44,46,289,290,291,44,45],
+  [40,2,2,40,44,71,289,290,291,72,46,26,40,40,40,40,40,67,67,40,26,40,67,44,45,45,46,45,45,45,45,45,45,45,45,46,50,2,40,40,68,70,40,40,40,50,40,40,44,46,289,343,291,44,52],
+  [40,26,40,26,44,46,289,290,291,44,46,40,40,40,40,40,40,40,40,40,40,40,40,68,69,69,69,69,69,69,69,69,69,69,69,70,40,40,40,40,67,67,40,40,40,40,40,40,44,46,289,290,291,44,45],
+  [40,40,2,2,44,46,289,290,291,44,47,21,21,21,21,21,22,40,40,40,40,40,26,67,67,67,67,67,67,67,66,67,67,67,67,67,40,40,40,40,40,40,40,40,40,40,40,40,44,71,289,290,291,72,45],
+  [40,40,2,50,44,46,289,290,291,44,45,107,108,109,109,110,46,50,40,40,40,40,40,50,26,2,40,2,50,40,40,40,40,40,40,40,40,2,2,40,40,40,2,50,40,40,40,40,44,46,289,290,291,44,45],
+  [40,40,2,26,44,71,289,290,291,72,45,131,87,133,87,134,46,26,50,40,40,40,40,40,40,40,50,26,2,40,26,40,40,40,40,40,26,10,11,11,11,11,11,12,40,2,40,40,44,46,337,338,339,44,45],
+  [40,40,40,40,44,46,289,290,291,44,45,155,156,157,157,158,46,2,26,40,40,40,10,11,11,11,11,11,12,26,40,50,40,40,50,50,50,34,35,35,35,35,51,36,40,2,26,40,44,46,344,344,344,44,45],
+  [40,26,40,40,44,46,289,290,291,44,45,174,224,224,224,177,46,26,40,50,26,40,34,35,35,35,35,51,36,40,40,40,40,40,2,2,2,34,35,27,35,35,35,37,11,11,11,11,44,71,289,290,291,72,45],
+  [40,50,40,40,44,46,289,290,291,44,45,198,248,248,247,201,46,26,40,40,40,40,34,35,27,35,35,35,37,11,11,11,11,11,11,11,11,38,51,35,27,35,35,35,35,35,35,35,44,46,289,290,291,44,45],
+  [40,40,40,40,44,71,289,290,291,72,45,45,45,52,28,45,46,40,50,40,10,11,38,51,35,27,35,35,35,35,51,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,44,46,289,290,291,44,45],
+];
+
+// Company building positions on the tilemap (tile coords)
+// These are areas on the map that trigger battles
+const COMPANY_ZONES = [
+  { key: 'palantir', tileX: 24, tileY: 2, w: 6, h: 8,  name: 'PALANTIR',   color: 0x4444ff, label: 'PALANTIR\nTech Inc.\nWEAKNESS: GOVERNANCE' },
+  { key: 'meta',     tileX: 8,  tileY: 6, w: 6, h: 8,  name: 'META',        color: 0x1877f2, label: 'META\nPlatforms\nWEAKNESS: HUMAN RIGHTS' },
+  { key: 'exxon',    tileX: 47, tileY: 0, w: 6, h: 8,  name: 'EXXON MOBIL', color: 0xff4400, label: 'EXXON\nCorporation\nWEAKNESS: CLIMATE' },
+];
+
+// ══════════════════════════════════════════
+// GAME DATA
 // ══════════════════════════════════════════
 const CHARS = {
   danielle: {
     name:'DANIELLE', role:'Social & Human Rights', hp:100, maxHp:100,
     spriteIdle:'warrior-idle', spriteAtk:'warrior-attack', spriteHit:'warrior-hit',
-    mapSheet:'assets/warrior_sheetnoeffect.png', mapFrameW:69, mapFrameH:37, mapFrames:6, mapRow:1,
+    mapSheet:'assets/warrior_sheetnoeffect.png', mapFrameW:69, mapFrameH:37,
     moves:[
       {name:'Human Rights Report',power:18,type:'social'},
       {name:'Supply Chain Audit', power:14,type:'social'},
@@ -267,7 +312,7 @@ const CHARS = {
   peter: {
     name:'PETER', role:"Ocean's Health", hp:120, maxHp:120,
     spriteIdle:'capybara-idle', spriteAtk:'capybara-munch', spriteHit:'capybara-sit',
-    mapSheet:'assets/capybara.png', mapFrameW:51, mapFrameH:67, mapFrames:10, mapRow:7, mapOffsetY:40,
+    mapSheet:'assets/capybara.png', mapFrameW:51, mapFrameH:67,
     moves:[
       {name:'Ocean Pollution Brief',power:20,type:'climate'},
       {name:'Divestment Threat',    power:16,type:'governance'},
@@ -278,7 +323,7 @@ const CHARS = {
   michiel: {
     name:'MICHIEL', role:'Corporate Governance', hp:110, maxHp:110,
     spriteIdle:'samurai-idle', spriteAtk:'samurai-attack', spriteHit:'samurai-hit',
-    mapSheet:'assets/samurai-run.png', mapFrameW:96, mapFrameH:96, mapFrames:16, mapRow:0,
+    mapSheet:'assets/samurai-run.png', mapFrameW:96, mapFrameH:96,
     moves:[
       {name:'Coalition Vote',        power:18,type:'governance'},
       {name:'AGM Season',            power:20,type:'governance'},
@@ -290,13 +335,13 @@ const CHARS = {
 
 const ENEMIES = {
   palantir:{name:'PALANTIR A.I.',org:'Technologies Inc.',hp:120,maxHp:120,weakness:'governance',
-    taunt:["Our data models predicted you'd come.","Engagement? We've already gamed it.","Your proxy vote is in our dataset."],
+    taunt:["Our data models predicted you'd come.","Engagement? Already gamed.","Your proxy is in our dataset."],
     loseMsg:'Palantir agrees to enhanced board oversight and data ethics framework.',resolution:'Palantir Proxy Voting Resolution'},
   meta:{name:'META CORP',org:'Platforms Inc.',hp:110,maxHp:110,weakness:'social',
-    taunt:["We move fast and break things.","Your engagement post got 3 likes.","Content moderation is... evolving."],
+    taunt:["We move fast and break things.","Your post got 3 likes.","Content moderation is evolving."],
     loseMsg:'Meta commits to independent human rights audit.',resolution:'Meta Proxy Voting Resolution'},
   exxon:{name:'EXXON MOBIL',org:'Corporation',hp:130,maxHp:130,weakness:'climate',
-    taunt:["We've been doing this since 1870.","Net zero by... eventually.","Our transition plan is in the mail."],
+    taunt:["We've been here since 1870.","Net zero by... eventually.","Our plan is in the mail."],
     loseMsg:'ExxonMobil adopts binding emissions reduction targets.',resolution:'ExxonMobil Proxy Voting Resolution'},
 };
 
@@ -386,164 +431,213 @@ function playAnim(specKey,canvasId,flip,loop,onComplete){
 // ══════════════════════════════════════════
 // PHASER MAP SCENE
 // ══════════════════════════════════════════
+const TILE_SIZE = 8;
+const SCALE = 3;
+const SCALED_TILE = TILE_SIZE * SCALE; // 24px
+const MAP_COLS = 55;
+const MAP_ROWS = 30;
+
 class MapScene extends Phaser.Scene {
   constructor(){super({key:'MapScene'});}
 
   preload(){
-    this.load.image('bg-back',  'assets/back.png');
-    this.load.image('bg-mid',   'assets/middle.png');
-    this.load.image('bg-fore',  'assets/foreground.png');
-    const char=CHARS[state.selectedChar];
+    this.load.image('tilemap', 'assets/tilemap.png');
+    // Player sprite
+    const char = CHARS[state.selectedChar];
     this.load.spritesheet('player-map', char.mapSheet, {
       frameWidth: char.mapFrameW,
       frameHeight: char.mapFrameH,
-      margin: 0, spacing: 0,
     });
   }
 
   create(){
-    const WORLD_W=1800, WORLD_H=500;
+    const WORLD_W = MAP_COLS * SCALED_TILE;
+    const WORLD_H = MAP_ROWS * SCALED_TILE;
 
-    // Parallax bg layers (tiled to world width)
-    this.bgBack  = this.add.tileSprite(0,0,WORLD_W,WORLD_H,'bg-back').setOrigin(0).setAlpha(0.45);
-    this.bgMid   = this.add.tileSprite(0,0,WORLD_W,WORLD_H,'bg-mid').setOrigin(0).setAlpha(0.65);
-    this.bgFore  = this.add.tileSprite(0,0,WORLD_W,WORLD_H,'bg-fore').setOrigin(0).setAlpha(0.85);
+    // Draw tilemap manually using canvas
+    // Phaser StaticGroup approach: draw each tile as an image
+    const tileImg = this.textures.get('tilemap').getSourceImage();
+    const tilesPerRow = Math.floor(tileImg.width / TILE_SIZE); // 192/8 = 24
 
-    // Ground
-    this.add.rectangle(WORLD_W/2, 490, WORLD_W, 20, 0x111111).setDepth(1);
+    // Create a graphics object for the tilemap
+    const rt = this.add.renderTexture(0, 0, WORLD_W, WORLD_H);
 
-    // Company buildings
-    const cos=[
-      {key:'palantir',x:380, label:'PALANTIR',  sub:'Technologies Inc.', accentHex:'#4466ff', accent:0x4466ff, weakness:'GOVERNANCE'},
-      {key:'meta',    x:900, label:'META',       sub:'Platforms Inc.',    accentHex:'#1877f2', accent:0x1877f2, weakness:'HUMAN RIGHTS'},
-      {key:'exxon',   x:1420,label:'EXXON MOBIL',sub:'Corporation',      accentHex:'#ff5500', accent:0xff5500, weakness:'CLIMATE'},
-    ];
+    MAP_DATA.forEach((row, rowIdx) => {
+      row.forEach((tileId, colIdx) => {
+        if (tileId <= 0) return;
+        const id = tileId - 1; // Tiled uses 1-based IDs
+        const srcX = (id % tilesPerRow) * TILE_SIZE;
+        const srcY = Math.floor(id / tilesPerRow) * TILE_SIZE;
+        const destX = colIdx * SCALED_TILE;
+        const destY = rowIdx * SCALED_TILE;
 
-    this.buildingZones=[];
+        // Draw tile scaled up
+        rt.draw('tilemap', destX - srcX * SCALE, destY - srcY * SCALE, 1, 0xffffff,
+          {x: srcX, y: srcY, width: TILE_SIZE, height: TILE_SIZE});
+      });
+    });
 
-    cos.forEach(co=>{
-      const defeated=state.defeated.includes(co.key);
-      const alpha=defeated?0.3:1;
+    // Better approach: use a canvas to draw the tilemap
+    const mapCanvas = this.textures.createCanvas('map-canvas', WORLD_W, WORLD_H);
+    const ctx = mapCanvas.context;
 
-      // Building body
-      const g=this.add.graphics();
-      g.fillStyle(0x0a0a0f,alpha);
-      g.fillRect(co.x-110,200,220,260);
-      g.lineStyle(defeated?1:2,defeated?0x333333:co.accent,alpha);
-      g.strokeRect(co.x-110,200,220,260);
+    MAP_DATA.forEach((row, rowIdx) => {
+      row.forEach((tileId, colIdx) => {
+        if (tileId <= 0) return;
+        const id = tileId - 1;
+        const srcX = (id % tilesPerRow) * TILE_SIZE;
+        const srcY = Math.floor(id / tilesPerRow) * TILE_SIZE;
+        const destX = colIdx * SCALED_TILE;
+        const destY = rowIdx * SCALED_TILE;
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(tileImg, srcX, srcY, TILE_SIZE, TILE_SIZE, destX, destY, SCALED_TILE, SCALED_TILE);
+      });
+    });
+    mapCanvas.refresh();
 
-      // Windows
-      if(!defeated){
-        for(let r=0;r<4;r++) for(let c=0;c<3;c++){
-          const wx=co.x-70+c*55,wy=220+r*40;
-          g.fillStyle(Math.random()>0.4?co.accent:0x111111,0.7);
-          g.fillRect(wx,wy,22,20);
-        }
-      }
+    rt.destroy();
+    this.add.image(0, 0, 'map-canvas').setOrigin(0);
 
-      // Sign
-      g.fillStyle(co.accent,defeated?0.2:0.9);
-      g.fillRect(co.x-90,390,180,32);
+    // Company zone overlays
+    this.buildingZones = [];
+    COMPANY_ZONES.forEach(co => {
+      const defeated = state.defeated.includes(co.key);
+      const x = co.tileX * SCALED_TILE;
+      const y = co.tileY * SCALED_TILE;
+      const w = co.w * SCALED_TILE;
+      const h = co.h * SCALED_TILE;
 
-      // Text labels
-      this.add.text(co.x,406,co.label,{fontFamily:"'Press Start 2P'",fontSize:'9px',color:defeated?'#333':'#fff'}).setOrigin(0.5);
-      this.add.text(co.x,425,co.sub,{fontFamily:"'Share Tech Mono'",fontSize:'7px',color:defeated?'#222':'#aaa'}).setOrigin(0.5);
-      this.add.text(co.x,438,`WEAKNESS: ${co.weakness}`,{fontFamily:"'Share Tech Mono'",fontSize:'6px',color:defeated?'#222':'#666'}).setOrigin(0.5);
-
-      if(defeated){
-        this.add.text(co.x,330,'✓ RESOLVED',{fontFamily:"'Press Start 2P'",fontSize:'8px',color:'#00ff88'}).setOrigin(0.5);
+      // Semi-transparent colored overlay
+      const g = this.add.graphics();
+      if (defeated) {
+        g.fillStyle(0x333333, 0.5);
+        g.fillRect(x, y, w, h);
+        g.lineStyle(2, 0x555555, 1);
+        g.strokeRect(x, y, w, h);
+        this.add.text(x + w/2, y + h/2 - 8, '✓', {
+          fontFamily: "'Press Start 2P'", fontSize: '16px', color: '#00ff88'
+        }).setOrigin(0.5);
+        this.add.text(x + w/2, y + h/2 + 10, 'RESOLVED', {
+          fontFamily: "'Press Start 2P'", fontSize: '5px', color: '#00ff88'
+        }).setOrigin(0.5);
       } else {
-        // Neon glow effect on sign
-        this.add.text(co.x,406,co.label,{fontFamily:"'Press Start 2P'",fontSize:'9px',color:co.accentHex}).setOrigin(0.5).setAlpha(0.3);
-        this.buildingZones.push({key:co.key,x:co.x,name:co.label});
+        g.fillStyle(co.color, 0.25);
+        g.fillRect(x, y, w, h);
+        g.lineStyle(2, co.color, 0.8);
+        g.strokeRect(x, y, w, h);
+
+        // Company name
+        this.add.text(x + w/2, y + 8, co.name, {
+          fontFamily: "'Press Start 2P'", fontSize: '6px', color: '#ffffff',
+          backgroundColor: '#00000099', padding: {x:3,y:2}
+        }).setOrigin(0.5, 0);
+
+        this.buildingZones.push({
+          key: co.key, cx: x + w/2, cy: y + h/2,
+          left: x, right: x+w, top: y, bottom: y+h
+        });
       }
     });
 
     // Player setup
-    const char=CHARS[state.selectedChar];
+    const char = CHARS[state.selectedChar];
+    const startX = 5 * SCALED_TILE;
+    const startY = 16 * SCALED_TILE;
+
     try {
-      this.player=this.add.sprite(150,430,'player-map').setDepth(5);
-      const frameRow=char.mapRow||0;
-      const totalCols=char.mapFrameW>0?Math.floor((char.mapSheet.includes('capybara')?576-60:char.mapFrameW*100)/char.mapFrameW):6;
-      // Walk anim: use frames from mapRow
-      const walkStart=frameRow*(char.mapSheet.includes('warrior')?6:char.mapSheet.includes('capybara')?10:16);
-      const walkEnd=walkStart+(char.mapFrames||6)-1;
-      if(!this.anims.exists('p-walk')){
-        this.anims.create({key:'p-walk',frames:this.anims.generateFrameNumbers('player-map',{start:walkStart,end:walkEnd}),frameRate:10,repeat:-1});
+      this.player = this.add.sprite(startX, startY, 'player-map').setDepth(10);
+      this.player.setScale(SCALE * 0.8);
+
+      if (!this.anims.exists('p-walk')) {
+        this.anims.create({
+          key: 'p-walk',
+          frames: this.anims.generateFrameNumbers('player-map', {start:0, end:5}),
+          frameRate: 8, repeat: -1
+        });
       }
-      if(!this.anims.exists('p-idle')){
-        this.anims.create({key:'p-idle',frames:this.anims.generateFrameNumbers('player-map',{start:0,end:Math.min(5,walkEnd)}),frameRate:6,repeat:-1});
+      if (!this.anims.exists('p-idle')) {
+        this.anims.create({
+          key: 'p-idle',
+          frames: this.anims.generateFrameNumbers('player-map', {start:0, end:0}),
+          frameRate: 4, repeat: -1
+        });
       }
       this.player.play('p-idle');
-      const scaleTarget=64/Math.max(char.mapFrameW,char.mapFrameH);
-      this.player.setScale(Math.max(1.5,scaleTarget*2));
-    } catch(e){
-      this.player=this.add.circle(150,430,20,0x00ff88).setDepth(5);
+    } catch(e) {
+      this.player = this.add.circle(startX, startY, 10, 0x00ff88).setDepth(10);
     }
 
     // Camera
-    this.cameras.main.setBounds(0,0,WORLD_W,WORLD_H);
-    this.cameras.main.startFollow(this.player,true,0.08,0.08);
+    this.cameras.main.setBounds(0, 0, WORLD_W, WORLD_H);
+    this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
 
-    // Keyboard
-    this.keys=this.input.keyboard.addKeys({
-      left: Phaser.Input.Keyboard.KeyCodes.A,
-      right:Phaser.Input.Keyboard.KeyCodes.D,
+    // Keys
+    this.keys = this.input.keyboard.addKeys({
+      up:    Phaser.Input.Keyboard.KeyCodes.W,
+      down:  Phaser.Input.Keyboard.KeyCodes.S,
+      left:  Phaser.Input.Keyboard.KeyCodes.A,
+      right: Phaser.Input.Keyboard.KeyCodes.D,
+      aUp:   Phaser.Input.Keyboard.KeyCodes.UP,
+      aDown: Phaser.Input.Keyboard.KeyCodes.DOWN,
       aLeft: Phaser.Input.Keyboard.KeyCodes.LEFT,
       aRight:Phaser.Input.Keyboard.KeyCodes.RIGHT,
-      enter:Phaser.Input.Keyboard.KeyCodes.ENTER,
+      enter: Phaser.Input.Keyboard.KeyCodes.ENTER,
     });
 
-    this.nearEnemy=null;
-    this.enterWasDown=false;
-    this.speed=4;
+    this.nearEnemy = null;
+    this.enterWasDown = false;
+    this.speed = 2;
   }
 
   update(){
-    const {left,right,aLeft,aRight,enter}=this.keys;
-    const goLeft=left.isDown||aLeft.isDown;
-    const goRight=right.isDown||aRight.isDown;
+    const k = this.keys;
+    const goLeft  = k.left.isDown  || k.aLeft.isDown;
+    const goRight = k.right.isDown || k.aRight.isDown;
+    const goUp    = k.up.isDown    || k.aUp.isDown;
+    const goDown  = k.down.isDown  || k.aDown.isDown;
+    const moving  = goLeft || goRight || goUp || goDown;
 
-    if(goLeft){
-      this.player.x-=this.speed;
-      this.player.setFlipX(true);
-      if(this.player.play) try{if(this.player.anims?.currentAnim?.key!=='p-walk')this.player.play('p-walk');}catch(e){}
-    } else if(goRight){
-      this.player.x+=this.speed;
-      this.player.setFlipX(false);
-      if(this.player.play) try{if(this.player.anims?.currentAnim?.key!=='p-walk')this.player.play('p-walk');}catch(e){}
-    } else {
-      if(this.player.play) try{if(this.player.anims?.currentAnim?.key!=='p-idle')this.player.play('p-idle');}catch(e){}
+    if (goLeft)  { this.player.x -= this.speed; if(this.player.setFlipX) this.player.setFlipX(true); }
+    if (goRight) { this.player.x += this.speed; if(this.player.setFlipX) this.player.setFlipX(false); }
+    if (goUp)    this.player.y -= this.speed;
+    if (goDown)  this.player.y += this.speed;
+
+    // Clamp to world
+    this.player.x = Phaser.Math.Clamp(this.player.x, 0, MAP_COLS * SCALED_TILE);
+    this.player.y = Phaser.Math.Clamp(this.player.y, 0, MAP_ROWS * SCALED_TILE);
+
+    // Animate player
+    if (this.player.play) {
+      try {
+        if (moving && this.player.anims?.currentAnim?.key !== 'p-walk') this.player.play('p-walk');
+        if (!moving && this.player.anims?.currentAnim?.key !== 'p-idle') this.player.play('p-idle');
+      } catch(e) {}
     }
 
-    this.player.x=Phaser.Math.Clamp(this.player.x,30,1770);
-
-    // Parallax scroll
-    this.bgBack.tilePositionX =this.cameras.main.scrollX*0.08;
-    this.bgMid.tilePositionX  =this.cameras.main.scrollX*0.25;
-    this.bgFore.tilePositionX =this.cameras.main.scrollX*0.5;
-
-    // Proximity check
-    this.nearEnemy=null;
-    this.buildingZones.forEach(bz=>{
-      if(Math.abs(this.player.x-bz.x)<110) this.nearEnemy=bz.key;
+    // Check proximity to company zones
+    this.nearEnemy = null;
+    const px = this.player.x, py = this.player.y;
+    this.buildingZones.forEach(bz => {
+      if (px >= bz.left - 20 && px <= bz.right + 20 && py >= bz.top - 20 && py <= bz.bottom + 20) {
+        this.nearEnemy = bz.key;
+      }
     });
 
-    const prompt=document.getElementById('enter-prompt');
-    if(this.nearEnemy){
-      const e=ENEMIES[this.nearEnemy];
-      prompt.style.display='block';
-      prompt.textContent=`▶ PRESS ENTER TO ENGAGE ${e.name}`;
+    // Update prompt
+    const prompt = document.getElementById('enter-prompt');
+    if (this.nearEnemy) {
+      prompt.style.display = 'block';
+      prompt.textContent = `▶ PRESS ENTER TO ENGAGE ${ENEMIES[this.nearEnemy].name}`;
     } else {
-      prompt.style.display='none';
+      prompt.style.display = 'none';
     }
 
     // Enter triggers battle
-    if(enter.isDown&&!this.enterWasDown&&this.nearEnemy){
-      this.enterWasDown=true;
+    if (k.enter.isDown && !this.enterWasDown && this.nearEnemy) {
+      this.enterWasDown = true;
       startBattle(this.nearEnemy);
     }
-    if(!enter.isDown) this.enterWasDown=false;
+    if (!k.enter.isDown) this.enterWasDown = false;
   }
 }
 
@@ -569,13 +663,15 @@ function selectChar(key){
 function launchMap(){
   if(state.phaserGame){state.phaserGame.destroy(true);state.phaserGame=null;}
   document.getElementById('phaser-container').innerHTML='';
-  state.phaserGame=new Phaser.Game({
-    type:Phaser.AUTO, width:800, height:500,
-    backgroundColor:'#0a0a0f',
-    parent:'phaser-container',
-    scene:MapScene,
-    audio:{noAudio:true},
-    scale:{mode:Phaser.Scale.NONE},
+  state.phaserGame = new Phaser.Game({
+    type: Phaser.AUTO,
+    width: 800, height: 500,
+    backgroundColor: '#1a1a2e',
+    parent: 'phaser-container',
+    scene: MapScene,
+    audio: {noAudio:true},
+    scale: {mode: Phaser.Scale.NONE},
+    pixelArt: true,
   });
 }
 
@@ -602,7 +698,6 @@ function startBattle(enemyKey){
   playAnim('evil-wizard-idle','enemy-sprite',true,true);
   document.getElementById('player-sprite-label').textContent=char.name;
   document.getElementById('enemy-sprite-label').textContent=enemy.name;
-
   setBattleLog(`<span class="hl">${enemy.name}</span> — "${enemy.taunt[Math.floor(Math.random()*enemy.taunt.length)]}"`);
   state.battleActive=true;
   showScreen('battle-screen');
@@ -628,7 +723,6 @@ function useMove(idx){
   showFlash(dmg,isWeak);
 
   playAnim(char.spriteAtk,'player-sprite',false,false,()=>playAnim(char.spriteIdle,'player-sprite',false,true));
-
   if(state.enemyHp<=0){setTimeout(()=>endBattle(true),800);return;}
   setTimeout(()=>enemyTurn(),1000);
 }
@@ -671,8 +765,8 @@ function returnToMap(){
 function retryBattle(){if(state.currentEnemy)startBattle(state.currentEnemy);}
 
 function resetGame(){
-  state={selectedChar:null,currentEnemy:null,playerHp:100,enemyHp:100,defeated:[],resolutions:0,battleActive:false,phaserGame:null};
   if(state.phaserGame){state.phaserGame.destroy(true);}
+  state={selectedChar:null,currentEnemy:null,playerHp:100,enemyHp:100,defeated:[],resolutions:0,battleActive:false,phaserGame:null};
   showScreen('intro-screen');
 }
 
@@ -697,9 +791,6 @@ function showFlash(dmg,sup){
   setTimeout(()=>{e.classList.remove('show');s.classList.remove('show');},700);
 }
 
-// ══════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════
 window.addEventListener('load',()=>{
   initStars();
   playAnim('warrior-idle', 'preview-danielle',false,true);
